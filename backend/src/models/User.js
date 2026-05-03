@@ -11,7 +11,7 @@ const UserSchema = new mongoose.Schema(
     email: {
       type: String,
       required: true,
-      unique: true, // For avoiding email duplication
+      unique: true,
     },
     password: {
       type: String,
@@ -19,7 +19,7 @@ const UserSchema = new mongoose.Schema(
     },
     role: {
       type: String,
-      enum: ["user", "admin"], // Enumeration = Only fixed/pre-defined value allowed
+      enum: ["user", "admin"],
       default: "user",
     },
   },
