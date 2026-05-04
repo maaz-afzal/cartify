@@ -1,8 +1,8 @@
+require("dotenv").config()
 const moongose = require("mongoose");
-const url = process.env.MONGODB_URL;
 
 moongose
-  .connect(url)
+  .connect(process.env.MONGODB_URL)
   .then(() => {
     console.log("Connected to MongoDB");
   })
