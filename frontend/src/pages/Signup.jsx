@@ -1,4 +1,4 @@
-import React, { useContext, useState } from "react";
+import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import authService from "../services/authService";
 
@@ -43,17 +43,17 @@ const Signup = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      await authService.signup(formData);
+      const response = await authService.signup(formData);
+      console.log("Signup successful:", response);
       navigate("/login");
     } catch (error) {
-      console.log(error);
+      console.log("Signup failed:", error);
     }
   };
 
   return (
     <div className="flex items-center justify-center min-h-screen px-6 bg-gray-100 dark:bg-gray-900">
       <div className="flex w-full max-w-sm overflow-hidden bg-white rounded-2xl shadow-lg dark:bg-gray-800 lg:max-w-4xl">
-        {/* Left Side */}
         <div
           className="hidden bg-cover lg:block lg:w-1/2"
           style={{
@@ -61,7 +61,6 @@ const Signup = () => {
           }}
         ></div>
 
-        {/* Right Side */}
         <div className="w-full px-6 py-8 md:px-8 lg:w-1/2">
           <div className="flex justify-center mx-auto">
             <img
@@ -75,9 +74,7 @@ const Signup = () => {
             Create an Account
           </p>
 
-          {/* Form Section */}
           <form onSubmit={handleSubmit} className="mt-6">
-            {/* Full Name Input */}
             <InputField
               id="name"
               label="Full Name"
@@ -87,7 +84,6 @@ const Signup = () => {
               onChange={handleChange}
             />
 
-            {/* Email Input */}
             <InputField
               id="email"
               label="Email Address"
@@ -97,7 +93,6 @@ const Signup = () => {
               onChange={handleChange}
             />
 
-            {/* Password Input */}
             <InputField
               id="password"
               label="Password"
@@ -107,7 +102,6 @@ const Signup = () => {
               onChange={handleChange}
             />
 
-            {/* Submit Button */}
             <div className="mt-6">
               <button
                 type="submit"

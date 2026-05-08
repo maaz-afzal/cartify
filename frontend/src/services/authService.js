@@ -13,9 +13,7 @@ const signup = async (data) => {
 const login = async (data) => {
   try {
     const res = await api.post("/api/auth/login", data);
-    if (res.data.token) {
-      localStorage.setItem("token", res.data.token);
-    }
+    console.log(res.data);
     return res.data;
   } catch (error) {
     console.log(error);

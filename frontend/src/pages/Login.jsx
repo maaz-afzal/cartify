@@ -45,10 +45,13 @@ const Login = () => {
     e.preventDefault();
     try {
       const response = await authService.login(formData);
-      // Note: Ensure karein ke backend se 'user' aur 'token' aa raha ho
-      login(response.user, response.token);
-
-      navigate("/");
+      if (response.token) {
+        const userData = response.user || { email: formData.email };
+        login(userData, response.token);
+        navigate("/");
+      } else {
+        console.log("No token received from backend");
+      }
     } catch (error) {
       console.error("Login Failed:", error);
     }
@@ -57,7 +60,6 @@ const Login = () => {
   return (
     <div className="flex items-center justify-center min-h-screen px-6 bg-gray-100 dark:bg-gray-900">
       <div className="flex w-full max-w-sm overflow-hidden bg-white rounded-2xl shadow-lg dark:bg-gray-800 lg:max-w-4xl">
-        {/* Left Side Image */}
         <div
           className="hidden bg-cover lg:block lg:w-1/2"
           style={{
@@ -65,7 +67,6 @@ const Login = () => {
           }}
         ></div>
 
-        {/* Right Side Form */}
         <div className="w-full px-6 py-8 md:px-8 lg:w-1/2">
           <div className="flex justify-center mx-auto">
             <img

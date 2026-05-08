@@ -14,28 +14,29 @@ const CartProvider = ({ children }) => {
 
   const getCart = async () => {
     try {
-      const getData = await cartService.getCart();
-      setCartItems(getData);
+      const data = await cartService.getCart();
+      setCartItems(data.cartItems);
     } catch (error) {
       console.error("Error fetching cart items:", error);
       setCartItems([]);
     }
   };
+
   const addToCart = async (data) => {
     const addCart = await cartService.addToCart(data);
-    setCartItems(addCart);
+    setCartItems(addCart.cartItems);
   };
   const removeFromCart = async (id) => {
     const removeCart = await cartService.removeFromCart(id);
-    setCartItems(removeCart);
+    setCartItems(removeCart.cartItems);
   };
   const updateCart = async (id, data) => {
     const cartUpdate = await cartService.updateCart(id, data);
-    setCartItems(cartUpdate);
+    setCartItems(cartUpdate.cartItems);
   };
   const clearCart = async () => {
-    const res = await cartService.clearCart();
-    setCartItems(res);
+    const clear = await cartService.clearCart();
+    setCartItems(clear.cartItems);
   };
 
   return (

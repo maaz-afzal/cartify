@@ -6,6 +6,7 @@ export const AuthContext = createContext();
 export const AuthProvider = ({ children }) => {
   const [isLoggedin, setIsLoggedin] = useState(false);
   const [user, setUser] = useState(null);
+
   useEffect(() => {
     const token = localStorage.getItem("token");
     const storedUser = localStorage.getItem("user");
@@ -28,7 +29,6 @@ export const AuthProvider = ({ children }) => {
         setUser(null);
       }
     } else {
-      // Clear invalid data
       if (storedUser === "undefined" || storedUser === "null") {
         localStorage.removeItem("user");
       }

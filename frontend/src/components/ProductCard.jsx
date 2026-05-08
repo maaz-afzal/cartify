@@ -4,64 +4,75 @@ import { CartContext } from "../context/CartContext";
 
 const ProductCard = ({ product }) => {
   const { addToCart } = useContext(CartContext);
+
   const handleCart = () => {
+    // Prevent default behavior if needed, though usually not required for div/buttons
     addToCart({ productId: product._id, quantity: 1 });
   };
+
+  // Helper to get safe values
+  const name = product?.name || "Beauty Product";
+  const price = product?.price || "24.99";
+  const image =
+    product?.images?.[0] || "https://via.placeholder.com/300x200?text=No+Image";
+  const category = product?.tags?.[0] || "Cosmetics";
+  const rating = product?.rating || 0;
+
   return (
-    <div className="max-w-xs bg-white rounded-xl shadow-md overflow-hidden">
-      <div className="h-48 overflow-hidden">
-        <img
-          src={
-            product?.images?.[0] ||
-            "https://via.placeholder.com/300x200?text=No+Image"
-          }
-          alt={product?.name || "Product"}
-          className="w-full h-full object-cover"
-        />
+    <div className="w-full max-w-sm bg-white rounded-lg shadow-md hover:shadow-lg transition-shadow duration-300 overflow-hidden border border-gray-100">
+      {/* Image Section */}
+      <div className="relative h-48 w-full bg-gray-100">
+        <img src={image} alt={name} className="w-full h-full object-cover" />
       </div>
 
-      <div className="p-4">
-        <div className="mb-1">
-          <span className="text-xs text-gray-500 uppercase tracking-wider">
-            beauty
-          </span>
-          <span className="text-xs text-gray-500 uppercase tracking-wider ml-1">
-            cosmetics
-          </span>
-        </div>
+      {/* Content Section */}
+      <div className="p-4 flex flex-col gap-2">
+        {/* Category Tag */}
+        <span className="text-xs font-medium text-blue-600 uppercase tracking-wide">
+          {category}
+        </span>
 
-        <h3 className="text-lg font-semibold text-gray-800">
-          {product?.name || "Beauty Cosmetics"}
+        {/* Product Name */}
+        <h3 className="text-lg font-bold text-gray-800 leading-tight">
+          {name}
         </h3>
 
-        <p className="text-sm text-gray-500 mt-1 line-clamp-2">
+        {/* Description - Simple truncation for beginners */}
+        <p className="text-sm text-gray-500 line-clamp-2 h-10">
           {product?.description ||
-            "A luxurious beauty cosmetic that enhances your natural glow and provides lasting hydration."}
+            "High-quality beauty product designed for everyday use."}
         </p>
 
-        <div className="flex items-center mt-2">
-          <div className="flex text-yellow-400 text-sm">
-            <span>★</span>
-            <span>★</span>
-            <span>★</span>
-            <span>★</span>
-            <span>★</span>
+        {/* Rating Stars */}
+        {rating > 0 && (
+          <div className="flex items-center gap-1">
+            <div className="flex text-yellow-400 text-sm">
+              {[...Array(5)].map((_, i) => (
+                <span
+                  key={i}
+                  className={
+                    i < Math.floor(rating) ? "text-yellow-400" : "text-gray-300"
+                  }
+                >
+                  ★
+                </span>
+              ))}
+            </div>
+            <span className="text-xs text-gray-400">({rating})</span>
           </div>
-        </div>
+        )}
 
-        <div className="flex items-center gap-2 mt-2">
-          <span className="text-xl font-bold text-gray-800">
-            ${product?.price || "24.99"}
-          </span>
-          <span className="text-sm text-gray-400 line-through">$26.00</span>
-        </div>
+        {/* Price and Button Container */}
+        <div className="mt-2 flex items-center justify-between pt-2 border-t border-gray-100">
+          <span className="text-xl font-bold text-gray-900">${price}</span>
 
-        <button
-          className="w-full mt-3 bg-gray-800 hover:bg-gray-700 text-white py-2 rounded-lg text-sm font-medium transition"
-          onClick={handleCart}
-        >
-          Add to Cart
-        </button>
+          <button
+            onClick={handleCart}
+            className="bg-gray-900 hover:bg-gray-700 text-white text-sm font-medium py-2 px-4 rounded-md transition-colors duration-200"
+          >
+            Add to Cart
+          </button>
+        </div>
       </div>
     </div>
   );

@@ -9,12 +9,18 @@ import {
   Sun,
 } from "lucide-react";
 import { useTheme } from "../context/ThemeContext";
+import { useNavigate } from "react-router-dom";
 
 const Navbar = () => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [shopOpen, setShopOpen] = useState(false);
   const [categoriesOpen, setCategoriesOpen] = useState(false);
   const { theme, toggleTheme } = useTheme();
+  const navigate = useNavigate();
+
+  const handleCartDisplay = () => {
+    navigate("/cart");
+  };
 
   return (
     <nav className="bg-white dark:bg-gray-900 shadow-sm sticky top-0 z-50">
@@ -138,7 +144,10 @@ const Navbar = () => {
               {theme === "light" ? <Moon size={20} /> : <Sun size={20} />}
             </button>
 
-            <button className="relative text-gray-700 dark:text-gray-300 hover:text-amber-600">
+            <button
+              className="relative text-gray-700 dark:text-gray-300 hover:text-amber-600"
+              onClick={handleCartDisplay}
+            >
               <ShoppingBag size={22} />
               <span className="absolute -top-2 -right-2 bg-amber-500 text-white text-xs rounded-full h-4 w-4 flex items-center justify-center">
                 0
