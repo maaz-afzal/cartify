@@ -8,12 +8,12 @@ import { ThemeProvider } from "./context/ThemeContext.jsx";
 
 createRoot(document.getElementById("root")).render(
   <BrowserRouter>
-    <AuthProvider>
-      <CartProvider>
-        <ThemeProvider>
+    <ThemeProvider>
+      <AuthProvider>
+        <CartProvider>
           <App />
-        </ThemeProvider>
-      </CartProvider>
-    </AuthProvider>
+        </CartProvider>
+      </AuthProvider>
+    </ThemeProvider>
   </BrowserRouter>,
 );

@@ -10,13 +10,38 @@ export const AuthProvider = ({ children }) => {
     const token = localStorage.getItem("token");
     const storedUser = localStorage.getItem("user");
 
-    if (token && storedUser) {
-      setIsLoggedin(true);
-      setUser(JSON.parse(storedUser));
+    if (
+      token &&
+      storedUser &&
+      storedUser !== "undefined" &&
+      storedUser !== "null"
+    ) {
+      try {
+        const parsedUser = JSON.parse(storedUser);
+        setIsLoggedin(true);
+        setUser(parsedUser);
+      } catch (error) {
+        console.log("Error parsing user:", error);
+        localStorage.removeItem("user");
+        localStorage.removeItem("token");
+        setIsLoggedin(false);
+        setUser(null);
+      }
+    } else {
+      // Clear invalid data
+      if (storedUser === "undefined" || storedUser === "null") {
+        localStorage.removeItem("user");
+      }
+      setIsLoggedin(false);
+      setUser(null);
     }
   }, []);
 
   const login = (userData, token) => {
+    if (!userData || !token) {
+      console.log("Invalid login data");
+      return;
+    }
     localStorage.setItem("token", token);
     localStorage.setItem("user", JSON.stringify(userData));
     setIsLoggedin(true);

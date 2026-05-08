@@ -13,8 +13,13 @@ const CartProvider = ({ children }) => {
   }, []);
 
   const getCart = async () => {
-    const getData = await cartService.getCart();
-    setCartItems(getData);
+    try {
+      const getData = await cartService.getCart();
+      setCartItems(getData);
+    } catch (error) {
+      console.error("Error fetching cart items:", error);
+      setCartItems([]);
+    }
   };
   const addToCart = async (data) => {
     const addCart = await cartService.addToCart(data);

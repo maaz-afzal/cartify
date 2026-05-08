@@ -44,7 +44,6 @@ const Signup = () => {
     e.preventDefault();
     try {
       await authService.signup(formData);
-      console.log(formData);  
       navigate("/login");
     } catch (error) {
       console.log(error);

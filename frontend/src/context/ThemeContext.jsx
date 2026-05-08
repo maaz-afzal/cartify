@@ -16,14 +16,17 @@ export const ThemeProvider = ({ children }) => {
   }, []);
 
   const toggleTheme = () => {
+    console.log("Toggle clicked, current theme:", theme);
     if (theme === "light") {
       setTheme("dark");
       localStorage.setItem("theme", "dark");
       document.documentElement.classList.add("dark");
+      console.log("Dark mode applied");
     } else {
       setTheme("light");
       localStorage.setItem("theme", "light");
       document.documentElement.classList.remove("dark");
+      console.log("Light mode applied");
     }
   };
 
