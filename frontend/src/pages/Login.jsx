@@ -76,7 +76,7 @@ const Login = () => {
           </div>
 
           <p className="mt-3 text-xl text-center text-gray-600 dark:text-gray-200">
-            Login to Your Account
+            Welcome Back
           </p>
 
           <form onSubmit={handleSubmit} className="mt-6">
@@ -109,7 +109,7 @@ const Login = () => {
           </form>
 
           <p className="mt-8 text-xs font-light text-center text-gray-400">
-            Create an account?{" "}
+            Don't have an account?{" "}
             <Link
               to="/signup"
               className="font-medium text-gray-700 dark:text-gray-200 hover:underline"
