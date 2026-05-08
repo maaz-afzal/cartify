@@ -6,7 +6,10 @@ export const CartContext = createContext();
 const CartProvider = ({ children }) => {
   const [cartItems, setCartItems] = useState([]);
   useEffect(() => {
-    getCart();
+    const token = localStorage.getItem("token");
+    if (token) {
+      getCart();
+    }
   }, []);
 
   const getCart = async () => {

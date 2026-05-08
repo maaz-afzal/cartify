@@ -8,7 +8,7 @@ mongoose.set("strictQuery", false);
   await mongoose.connect(process.env.MONGODB_URL);
   await mongoose.connection.db.dropDatabase();
 
-  const res = await fetch("https://dummyjson.com/products?limit=5");
+  const res = await fetch("https://dummyjson.com/products");
   const { products } = await res.json();
 
   const validProducts = products.map((p, i) => ({
