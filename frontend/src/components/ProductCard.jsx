@@ -1,16 +1,18 @@
-import React, { useContext } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import React, { useContext, useState } from "react";
+import { Link } from "react-router-dom";
 import { CartContext } from "../context/CartContext";
 import { Eye } from "lucide-react";
+import ToastNotification from "./ToastNotification";
 
 const ProductCard = ({ product }) => {
   const { addToCart } = useContext(CartContext);
-  const navigate = useNavigate();
+  const [toast, setToast] = useState("");
 
   const handleCart = (e) => {
     e.preventDefault();
     e.stopPropagation();
     addToCart({ productId: product._id, quantity: 1 });
+    setToast("Added to cart!");
   };
 
   const name = product?.name || "Beauty Product";
@@ -22,6 +24,9 @@ const ProductCard = ({ product }) => {
 
   return (
     <Link to={`/product/${product._id}`} className="block group">
+      {toast && (
+        <ToastNotification message={toast} onClose={() => setToast("")} />
+      )}
       <div className="bg-white border border-gray-100 rounded-2xl overflow-hidden shadow-sm hover:shadow-xl transition-all duration-300">
         {/* Image */}
         <div className="relative h-52 overflow-hidden bg-gray-100">
@@ -77,14 +82,7 @@ const ProductCard = ({ product }) => {
                 Add to Cart
               </button>
               {/* Preview Button */}
-              <button
-                onClick={(e) => {
-                  e.preventDefault();
-                  e.stopPropagation();
-                  navigate(`/product/${product._id}`);
-                }}
-                className="p-2 rounded-lg border border-gray-300 hover:bg-gray-100 transition cursor-pointer"
-              >
+              <button className="p-2 rounded-lg border border-gray-300 hover:bg-gray-100 transition cursor-pointer">
                 <Eye size={18} />
               </button>
             </div>

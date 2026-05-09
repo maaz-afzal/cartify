@@ -4,6 +4,7 @@ import { CartContext } from "../context/CartContext";
 import { Minus, Plus } from "lucide-react";
 import productService from "../services/productService";
 import Navbar from "../components/Navbar";
+import ToastNotification from "../components/ToastNotification";
 
 const ProductDetailPage = () => {
   const { id } = useParams();
@@ -12,6 +13,7 @@ const ProductDetailPage = () => {
   const [product, setProduct] = useState(null);
   const [loading, setLoading] = useState(true);
   const [qty, setQty] = useState(1);
+  const [toast, setToast] = useState("");
 
   useEffect(() => {
     const fetchProduct = async () => {
@@ -33,6 +35,7 @@ const ProductDetailPage = () => {
   const handleAddToCart = () => {
     if (!product) return;
     addToCart({ productId: product._id, quantity: qty });
+    setToast(`${product.name} added to cart!`);
   };
 
   if (loading) {
@@ -53,6 +56,9 @@ const ProductDetailPage = () => {
 
   return (
     <div>
+      {toast && (
+        <ToastNotification message={toast} onClose={() => setToast("")} />
+      )}
       <Navbar />
       <div className="max-w-6xl mx-auto px-4 py-10 grid grid-cols-1 md:grid-cols-2 gap-10">
         {/* IMAGE */}

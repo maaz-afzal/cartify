@@ -5,6 +5,7 @@ import { AuthContext } from "../context/AuthContext";
 import Navbar from "../components/Navbar";
 import { Trash2, Plus, Minus, ShoppingBag } from "lucide-react";
 import productService from "../services/productService";
+import ToastNotification from "../components/ToastNotification";
 
 const Cart = () => {
   const { cartItems, removeFromCart, updateCart, getCart } =
@@ -12,6 +13,7 @@ const Cart = () => {
   const { isLoggedin } = useContext(AuthContext);
   const [loading, setLoading] = useState(true);
   const [productsMap, setProductsMap] = useState({});
+  const [toast, setToast] = useState("");
 
   useEffect(() => {
     const fetchCart = async () => {
@@ -47,10 +49,12 @@ const Cart = () => {
   const handleQuantityChange = async (itemId, newQuantity) => {
     if (newQuantity < 1) return;
     await updateCart(itemId, { quantity: newQuantity });
+    setToast("Cart updated successfully!");
   };
 
   const handleRemoveItem = async (itemId) => {
     await removeFromCart(itemId);
+    setToast("Item removed from cart.");
   };
 
   const getProduct = (productId) => {
@@ -132,6 +136,9 @@ const Cart = () => {
 
   return (
     <div>
+      {toast && (
+        <ToastNotification message={toast} onClose={() => setToast("")} />
+      )}
       <Navbar />
       <div className="max-w-7xl mx-auto px-4 py-8">
         <h1 className="text-2xl font-bold text-gray-800 mb-6">Shopping Cart</h1>
