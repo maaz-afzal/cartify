@@ -1,16 +1,18 @@
 import React, { useContext } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { CartContext } from "../context/CartContext";
+import { Eye } from "lucide-react";
 
 const ProductCard = ({ product }) => {
   const { addToCart } = useContext(CartContext);
+  const navigate = useNavigate();
 
-  const handleCart = () => {
-    // Prevent default behavior if needed, though usually not required for div/buttons
+  const handleCart = (e) => {
+    e.preventDefault();
+    e.stopPropagation();
     addToCart({ productId: product._id, quantity: 1 });
   };
 
-  // Helper to get safe values
   const name = product?.name || "Beauty Product";
   const price = product?.price || "24.99";
   const image =
@@ -19,32 +21,33 @@ const ProductCard = ({ product }) => {
   const rating = product?.rating || 0;
 
   return (
-    <div className="w-full max-w-sm bg-white rounded-lg shadow-md hover:shadow-lg transition-shadow duration-300 overflow-hidden border border-gray-100">
-      {/* Image Section */}
-      <div className="relative h-48 w-full bg-gray-100">
-        <img src={image} alt={name} className="w-full h-full object-cover" />
-      </div>
+    <Link to={`/product/${product._id}`} className="block group">
+      <div className="bg-white border border-gray-100 rounded-2xl overflow-hidden shadow-sm hover:shadow-xl transition-all duration-300">
+        {/* Image */}
+        <div className="relative h-52 overflow-hidden bg-gray-100">
+          <img
+            src={image}
+            alt={name}
+            className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+          />
 
-      {/* Content Section */}
-      <div className="p-4 flex flex-col gap-2">
-        {/* Category Tag */}
-        <span className="text-xs font-medium text-blue-600 uppercase tracking-wide">
-          {category}
-        </span>
+          <span className="absolute top-3 left-3 bg-black/70 text-white text-xs px-3 py-1 rounded-full backdrop-blur">
+            {category}
+          </span>
+        </div>
 
-        {/* Product Name */}
-        <h3 className="text-lg font-bold text-gray-800 leading-tight">
-          {name}
-        </h3>
+        {/* Content */}
+        <div className="p-4 flex flex-col gap-2">
+          <h3 className="text-base font-semibold text-gray-800 group-hover:text-black transition-colors">
+            {name}
+          </h3>
 
-        {/* Description - Simple truncation for beginners */}
-        <p className="text-sm text-gray-500 line-clamp-2 h-10">
-          {product?.description ||
-            "High-quality beauty product designed for everyday use."}
-        </p>
+          <p className="text-sm text-gray-500 line-clamp-2">
+            {product?.description ||
+              "High-quality beauty product designed for everyday use."}
+          </p>
 
-        {/* Rating Stars */}
-        {rating > 0 && (
+          {/* Rating */}
           <div className="flex items-center gap-1">
             <div className="flex text-yellow-400 text-sm">
               {[...Array(5)].map((_, i) => (
@@ -60,21 +63,35 @@ const ProductCard = ({ product }) => {
             </div>
             <span className="text-xs text-gray-400">({rating})</span>
           </div>
-        )}
 
-        {/* Price and Button Container */}
-        <div className="mt-2 flex items-center justify-between pt-2 border-t border-gray-100">
-          <span className="text-xl font-bold text-gray-900">${price}</span>
+          {/* Price + Buttons */}
+          <div className="flex items-center justify-between pt-2 mt-2 border-t border-gray-100">
+            <span className="text-lg font-bold text-gray-900">${price}</span>
 
-          <button
-            onClick={handleCart}
-            className="bg-gray-900 hover:bg-gray-700 text-white text-sm font-medium py-2 px-4 rounded-md transition-colors duration-200"
-          >
-            Add to Cart
-          </button>
+            <div className="flex items-center gap-2">
+              {/* Add to Cart */}
+              <button
+                onClick={handleCart}
+                className="bg-black text-white text-sm px-4 py-2 rounded-lg hover:bg-gray-800 transition-all duration-200 active:scale-95"
+              >
+                Add to Cart
+              </button>
+              {/* Preview Button */}
+              <button
+                onClick={(e) => {
+                  e.preventDefault();
+                  e.stopPropagation();
+                  navigate(`/product/${product._id}`);
+                }}
+                className="p-2 rounded-lg border border-gray-300 hover:bg-gray-100 transition cursor-pointer"
+              >
+                <Eye size={18} />
+              </button>
+            </div>
+          </div>
         </div>
       </div>
-    </div>
+    </Link>
   );
 };
 
