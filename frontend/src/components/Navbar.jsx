@@ -1,4 +1,5 @@
-import React, { useState } from "react";
+import React, { useContext, useState } from "react";
+import { CartContext } from "../context/CartContext";
 import {
   Search,
   ShoppingBag,
@@ -16,6 +17,7 @@ const Navbar = () => {
   const [shopOpen, setShopOpen] = useState(false);
   const [categoriesOpen, setCategoriesOpen] = useState(false);
   const { theme, toggleTheme } = useTheme();
+  const { cartItems } = useContext(CartContext);
   const navigate = useNavigate();
 
   const handleCartDisplay = () => {
@@ -150,7 +152,7 @@ const Navbar = () => {
             >
               <ShoppingBag size={22} />
               <span className="absolute -top-2 -right-2 bg-amber-500 text-white text-xs rounded-full h-4 w-4 flex items-center justify-center">
-                0
+                {cartItems.length}
               </span>
             </button>
 
