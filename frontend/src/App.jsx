@@ -6,6 +6,7 @@ import Login from "./pages/Login.jsx";
 import Signup from "./pages/Signup.jsx";
 import Cart from "./pages/Cart.jsx";
 import ProductDetail from "./pages/ProductDetail.jsx";
+import NotFound from "./pages/NotFound.jsx";
 
 const App = () => {
   return (
@@ -16,6 +17,7 @@ const App = () => {
         <Route path="/signup" element={<Signup />} />
         <Route path="/cart" element={<Cart />} />
         <Route path="/product/:id" element={<ProductDetail />} />
+        <Route path="*" element={<NotFound />} />
       </Routes>
     </div>
   );
