@@ -11,7 +11,6 @@ const Home = () => {
   const [selectedBrand, setSelectedBrand] = useState("All");
   const [sortOrder, setSortOrder] = useState("default");
 
-  // fetch products
   useEffect(() => {
     productService
       .getProducts()
@@ -25,7 +24,6 @@ const Home = () => {
   useEffect(() => {
     let result = [...allProducts];
 
-    // Category filter
     if (selectedCategory !== "All") {
       result = result.filter(
         (p) =>
@@ -33,7 +31,6 @@ const Home = () => {
       );
     }
 
-    // Brand Filter
     if (selectedBrand !== "All") {
       if (selectedBrand === "No Brand") {
         result = result.filter((p) => !p.brand);
@@ -42,7 +39,6 @@ const Home = () => {
       }
     }
 
-    // Sorting
     if (sortOrder === "az") {
       result.sort((a, b) => (a.name || "").localeCompare(b.name || ""));
     } else if (sortOrder === "za") {
@@ -75,12 +71,12 @@ const Home = () => {
   ];
 
   return (
-    <div>
+    <div className="min-h-screen bg-gray-50 dark:bg-gray-950 transition-colors duration-300">
       <Navbar />
       <Hero />
 
       {/* Filter Section */}
-      <div className="bg-gray-50 dark:bg-gray-800 border-y border-gray-200 dark:border-gray-700 max-w-7xl mx-auto rounded-2xl">
+      <div className="bg-white dark:bg-gray-900 border-y border-gray-200 dark:border-gray-800 max-w-7xl mx-auto rounded-2xl shadow-sm transition-colors duration-300">
         <div className="max-w-7xl mx-auto px-4 py-4 flex flex-wrap items-center justify-center gap-6">
           {/* Category Dropdown */}
           <div className="flex items-center gap-2">
@@ -90,7 +86,7 @@ const Home = () => {
             <select
               value={selectedCategory}
               onChange={(e) => setSelectedCategory(e.target.value)}
-              className="bg-white dark:bg-gray-900 border border-gray-300 dark:border-gray-600 text-sm rounded-lg focus:ring-amber-500 focus:border-amber-500 block p-2 transition-colors dark:text-white outline-none cursor-pointer"
+              className="bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-700 text-gray-700 dark:text-gray-300 text-sm rounded-lg focus:ring-amber-500 focus:border-amber-500 block p-2 transition-colors outline-none cursor-pointer"
             >
               {uniqueCategories.map((cat) => (
                 <option key={cat} value={cat}>
@@ -108,7 +104,7 @@ const Home = () => {
             <select
               value={selectedBrand}
               onChange={(e) => setSelectedBrand(e.target.value)}
-              className="bg-white dark:bg-gray-900 border border-gray-300 dark:border-gray-600 text-sm rounded-lg focus:ring-amber-500 focus:border-amber-500 block p-2 transition-colors dark:text-white outline-none cursor-pointer"
+              className="bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-700 text-gray-700 dark:text-gray-300 text-sm rounded-lg focus:ring-amber-500 focus:border-amber-500 block p-2 transition-colors outline-none cursor-pointer"
             >
               {uniqueBrands.map((b) => (
                 <option key={b} value={b}>
@@ -126,7 +122,7 @@ const Home = () => {
             <select
               value={sortOrder}
               onChange={(e) => setSortOrder(e.target.value)}
-              className="bg-white dark:bg-gray-900 border border-gray-300 dark:border-gray-600 text-sm rounded-lg focus:ring-amber-500 focus:border-amber-500 block p-2 transition-colors dark:text-white outline-none cursor-pointer"
+              className="bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-700 text-gray-700 dark:text-gray-300 text-sm rounded-lg focus:ring-amber-500 focus:border-amber-500 block p-2 transition-colors outline-none cursor-pointer"
             >
               <option value="default">Default</option>
               <option value="az">Name (A-Z)</option>
@@ -136,6 +132,7 @@ const Home = () => {
         </div>
       </div>
 
+      {/* Products Grid */}
       <div className="max-w-7xl mx-auto px-4 py-8">
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
           {filteredProducts.map((product) => (
@@ -143,7 +140,7 @@ const Home = () => {
           ))}
         </div>
         {filteredProducts.length === 0 && (
-          <div className="text-center py-20 text-gray-500 italic">
+          <div className="text-center py-20 text-gray-500 dark:text-gray-400 italic">
             No products found matching the filters.
           </div>
         )}

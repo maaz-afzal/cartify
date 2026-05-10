@@ -1,18 +1,17 @@
 import React from "react";
 
 const Hero = () => {
-
   return (
-    <section className="bg-white overflow-hidden">
+    <section className="bg-white dark:bg-gray-900 overflow-hidden transition-colors duration-300">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="grid lg:grid-cols-2 gap-10 items-center py-16 lg:py-24">
           {/* Content */}
           <div>
-            <h1 className="text-4xl sm:text-5xl md:text-6xl font-bold text-gray-900 leading-tight">
-              Reveal Your Natural <span className="text-amber-600">Beauty</span>
+            <h1 className="text-4xl sm:text-5xl md:text-6xl font-bold text-gray-900 dark:text-white leading-tight">
+              Reveal Your Natural{" "}
+              <span className="text-amber-600 dark:text-amber-500">Beauty</span>
             </h1>
-
-            <p className="mt-5 text-gray-600 text-lg">
+            <p className="mt-5 text-gray-600 dark:text-gray-400 text-lg">
               Discover premium skincare and makeup products made for everyday
               beauty.
             </p>

@@ -78,19 +78,22 @@ const Cart = () => {
 
   if (!isLoggedin) {
     return (
-      <div>
+      <div className="min-h-screen bg-gray-50 dark:bg-gray-950 transition-colors duration-300">
         <Navbar />
         <div className="max-w-7xl mx-auto px-4 py-20 text-center">
-          <ShoppingBag size={64} className="mx-auto text-gray-400 mb-4" />
-          <h2 className="text-2xl font-semibold text-gray-800 mb-2">
+          <ShoppingBag
+            size={64}
+            className="mx-auto text-gray-400 dark:text-gray-600 mb-4"
+          />
+          <h2 className="text-2xl font-semibold text-gray-800 dark:text-white mb-2">
             Your cart is waiting
           </h2>
-          <p className="text-gray-500 mb-6">
+          <p className="text-gray-500 dark:text-gray-400 mb-6">
             Please login to view your cart items
           </p>
           <Link
             to="/login"
-            className="bg-amber-500 hover:bg-amber-600 text-white px-6 py-2 rounded-lg"
+            className="bg-amber-500 hover:bg-amber-600 text-white px-6 py-2 rounded-lg transition"
           >
             Login to Continue
           </Link>
@@ -104,28 +107,33 @@ const Cart = () => {
     (cartItems.length > 0 && Object.keys(productsMap).length === 0)
   ) {
     return (
-      <div>
+      <div className="min-h-screen bg-gray-50 dark:bg-gray-950">
         <Navbar />
-        <div className="text-center py-20">Loading your cart...</div>
+        <div className="text-center py-20 text-gray-500 dark:text-gray-400">
+          Loading your cart...
+        </div>
       </div>
     );
   }
 
   if (cartItems.length === 0) {
     return (
-      <div>
+      <div className="min-h-screen bg-gray-50 dark:bg-gray-950 transition-colors duration-300">
         <Navbar />
         <div className="max-w-7xl mx-auto px-4 py-20 text-center">
-          <ShoppingBag size={64} className="mx-auto text-gray-400 mb-4" />
-          <h2 className="text-2xl font-semibold text-gray-800 mb-2">
+          <ShoppingBag
+            size={64}
+            className="mx-auto text-gray-400 dark:text-gray-600 mb-4"
+          />
+          <h2 className="text-2xl font-semibold text-gray-800 dark:text-white mb-2">
             Your cart is empty
           </h2>
-          <p className="text-gray-500 mb-6">
+          <p className="text-gray-500 dark:text-gray-400 mb-6">
             Looks like you haven't added any items yet
           </p>
           <Link
             to="/"
-            className="bg-amber-500 hover:bg-amber-600 text-white px-6 py-2 rounded-lg"
+            className="bg-amber-500 hover:bg-amber-600 text-white px-6 py-2 rounded-lg transition"
           >
             Continue Shopping
           </Link>
@@ -135,18 +143,20 @@ const Cart = () => {
   }
 
   return (
-    <div>
+    <div className="min-h-screen bg-gray-50 dark:bg-gray-950 transition-colors duration-300">
       {toast && (
         <ToastNotification message={toast} onClose={() => setToast("")} />
       )}
       <Navbar />
       <div className="max-w-7xl mx-auto px-4 py-8">
-        <h1 className="text-2xl font-bold text-gray-800 mb-6">Shopping Cart</h1>
+        <h1 className="text-2xl font-bold text-gray-800 dark:text-white mb-6">
+          Shopping Cart
+        </h1>
 
         <div className="flex flex-col lg:flex-row gap-8">
           <div className="flex-1">
-            <div className="bg-white rounded-lg shadow-md overflow-hidden">
-              <div className="hidden md:grid grid-cols-12 gap-4 bg-gray-100 px-4 py-3 text-sm font-medium text-gray-600">
+            <div className="bg-white dark:bg-gray-900 rounded-lg shadow-md overflow-hidden transition-colors duration-300">
+              <div className="hidden md:grid grid-cols-12 gap-4 bg-gray-100 dark:bg-gray-800 px-4 py-3 text-sm font-medium text-gray-600 dark:text-gray-400">
                 <div className="col-span-6">Product</div>
                 <div className="col-span-2 text-center">Price</div>
                 <div className="col-span-2 text-center">Quantity</div>
@@ -156,7 +166,10 @@ const Cart = () => {
               {cartItems.map((item) => {
                 const product = getProduct(item.productId);
                 return (
-                  <div key={item._id} className="border-t px-4 py-4">
+                  <div
+                    key={item._id}
+                    className="border-t border-gray-200 dark:border-gray-800 px-4 py-4"
+                  >
                     <div className="flex flex-col md:grid md:grid-cols-12 gap-4 items-center">
                       <div className="flex items-center gap-4 md:col-span-6">
                         <img
@@ -168,17 +181,17 @@ const Cart = () => {
                           className="w-16 h-16 object-cover rounded"
                         />
                         <div>
-                          <h3 className="font-medium text-gray-800">
+                          <h3 className="font-medium text-gray-800 dark:text-white">
                             {product.name || "Product"}
                           </h3>
-                          <p className="text-sm text-gray-500">
+                          <p className="text-sm text-gray-500 dark:text-gray-400">
                             {product.category || "Category"}
                           </p>
                         </div>
                       </div>
 
                       <div className="md:col-span-2 text-center">
-                        <span className="text-gray-800 font-medium">
+                        <span className="text-gray-800 dark:text-white font-medium">
                           ${item.price}
                         </span>
                       </div>
@@ -191,11 +204,14 @@ const Cart = () => {
                               item.quantity - 1,
                             )
                           }
-                          className="p-1 rounded-md bg-gray-100 hover:bg-gray-200"
+                          className="p-1 rounded-md bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 transition"
                         >
-                          <Minus size={16} />
+                          <Minus
+                            size={16}
+                            className="text-gray-600 dark:text-gray-400"
+                          />
                         </button>
-                        <span className="w-8 text-center font-medium">
+                        <span className="w-8 text-center font-medium text-gray-800 dark:text-white">
                           {item.quantity}
                         </span>
                         <button
@@ -205,14 +221,17 @@ const Cart = () => {
                               item.quantity + 1,
                             )
                           }
-                          className="p-1 rounded-md bg-gray-100 hover:bg-gray-200"
+                          className="p-1 rounded-md bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 transition"
                         >
-                          <Plus size={16} />
+                          <Plus
+                            size={16}
+                            className="text-gray-600 dark:text-gray-400"
+                          />
                         </button>
                       </div>
 
                       <div className="md:col-span-1 text-center">
-                        <span className="font-semibold text-gray-800">
+                        <span className="font-semibold text-gray-800 dark:text-white">
                           ${(item.price * item.quantity).toFixed(2)}
                         </span>
                       </div>
@@ -220,7 +239,7 @@ const Cart = () => {
                       <div className="md:col-span-1 text-center">
                         <button
                           onClick={() => handleRemoveItem(item.productId)}
-                          className="text-red-500 hover:text-red-700"
+                          className="text-red-500 hover:text-red-700 transition"
                         >
                           <Trash2 size={18} />
                         </button>
@@ -234,7 +253,7 @@ const Cart = () => {
             <div className="mt-4">
               <Link
                 to="/"
-                className="text-amber-600 hover:text-amber-700 flex items-center gap-2"
+                className="text-amber-600 dark:text-amber-500 hover:text-amber-700 dark:hover:text-amber-400 flex items-center gap-2 transition"
               >
                 ← Continue Shopping
               </Link>
@@ -242,17 +261,17 @@ const Cart = () => {
           </div>
 
           <div className="lg:w-96">
-            <div className="bg-white rounded-lg shadow-md p-6">
-              <h2 className="text-lg font-semibold text-gray-800 mb-4">
+            <div className="bg-white dark:bg-gray-900 rounded-lg shadow-md p-6 transition-colors duration-300">
+              <h2 className="text-lg font-semibold text-gray-800 dark:text-white mb-4">
                 Order Summary
               </h2>
 
-              <div className="space-y-2 border-b pb-4">
-                <div className="flex justify-between text-gray-600">
+              <div className="space-y-2 border-b border-gray-200 dark:border-gray-800 pb-4">
+                <div className="flex justify-between text-gray-600 dark:text-gray-400">
                   <span>Subtotal</span>
                   <span>${calculateSubtotal().toFixed(2)}</span>
                 </div>
-                <div className="flex justify-between text-gray-600">
+                <div className="flex justify-between text-gray-600 dark:text-gray-400">
                   <span>Shipping</span>
                   <span>
                     {calculateShipping() === 0
@@ -262,9 +281,11 @@ const Cart = () => {
                 </div>
               </div>
 
-              <div className="flex justify-between mt-4 pb-4 border-b">
-                <span className="font-semibold text-gray-800">Total</span>
-                <span className="font-bold text-xl text-gray-800">
+              <div className="flex justify-between mt-4 pb-4 border-b border-gray-200 dark:border-gray-800">
+                <span className="font-semibold text-gray-800 dark:text-white">
+                  Total
+                </span>
+                <span className="font-bold text-xl text-gray-800 dark:text-white">
                   ${calculateTotal().toFixed(2)}
                 </span>
               </div>
@@ -273,7 +294,7 @@ const Cart = () => {
                 Proceed to Checkout
               </button>
 
-              <p className="text-xs text-gray-500 text-center mt-4">
+              <p className="text-xs text-gray-500 dark:text-gray-400 text-center mt-4">
                 Free shipping on orders over $50
               </p>
             </div>

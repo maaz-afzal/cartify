@@ -8,7 +8,7 @@ const InputField = ({ label, type, placeholder, id, value, onChange }) => {
     <div className="mt-4">
       <label
         htmlFor={id}
-        className="block mb-2 text-sm font-medium text-gray-600 dark:text-gray-200"
+        className="block mb-2 text-sm font-medium text-gray-600 dark:text-gray-300"
       >
         {label}
       </label>
@@ -18,7 +18,7 @@ const InputField = ({ label, type, placeholder, id, value, onChange }) => {
         placeholder={placeholder}
         value={value}
         onChange={onChange}
-        className="block w-full px-4 py-2 text-gray-700 bg-white border rounded-lg dark:bg-gray-800 dark:text-gray-300 dark:border-gray-600 focus:border-blue-400 focus:ring-opacity-40 dark:focus:border-blue-300 focus:outline-none focus:ring focus:ring-blue-300"
+        className="block w-full px-4 py-2 text-gray-700 dark:text-gray-200 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-lg focus:border-amber-500 focus:ring-opacity-40 dark:focus:border-amber-500 focus:outline-none focus:ring focus:ring-amber-300 dark:focus:ring-amber-800 transition"
       />
     </div>
   );
@@ -58,8 +58,8 @@ const Login = () => {
   };
 
   return (
-    <div className="flex items-center justify-center min-h-screen px-6 bg-gray-100 dark:bg-gray-900">
-      <div className="flex w-full max-w-sm overflow-hidden bg-white rounded-2xl shadow-lg dark:bg-gray-800 lg:max-w-4xl">
+    <div className="flex items-center justify-center min-h-screen px-6 bg-gray-100 dark:bg-gray-900 transition-colors duration-300">
+      <div className="flex w-full max-w-sm overflow-hidden bg-white dark:bg-gray-800 rounded-2xl shadow-lg lg:max-w-4xl transition-colors duration-300">
         <div
           className="hidden bg-cover lg:block lg:w-1/2"
           style={{
@@ -76,7 +76,7 @@ const Login = () => {
             />
           </div>
 
-          <p className="mt-3 text-xl text-center text-gray-600 dark:text-gray-200">
+          <p className="mt-3 text-xl text-center text-gray-600 dark:text-gray-300">
             Welcome Back
           </p>
 
@@ -102,18 +102,18 @@ const Login = () => {
             <div className="mt-6">
               <button
                 type="submit"
-                className="w-full px-6 py-3 text-sm font-medium tracking-wide text-white capitalize transition-colors duration-300 transform bg-blue-600 rounded-lg hover:bg-blue-500 focus:outline-none focus:ring focus:ring-blue-300 focus:ring-opacity-50"
+                className="w-full px-6 py-3 text-sm font-medium tracking-wide text-white capitalize transition-colors duration-300 transform bg-amber-500 rounded-lg hover:bg-amber-600 focus:outline-none focus:ring focus:ring-amber-300 focus:ring-opacity-50"
               >
                 Login
               </button>
             </div>
           </form>
 
-          <p className="mt-8 text-xs font-light text-center text-gray-400">
+          <p className="mt-8 text-xs font-light text-center text-gray-400 dark:text-gray-500">
             Don't have an account?{" "}
             <Link
               to="/signup"
-              className="font-medium text-gray-700 dark:text-gray-200 hover:underline"
+              className="font-medium text-gray-700 dark:text-gray-300 hover:underline"
             >
               Sign Up
             </Link>
