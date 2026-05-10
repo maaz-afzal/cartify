@@ -14,8 +14,6 @@ import { useNavigate } from "react-router-dom";
 
 const Navbar = () => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-  const [shopOpen, setShopOpen] = useState(false);
-  const [categoriesOpen, setCategoriesOpen] = useState(false);
   const { theme, toggleTheme } = useTheme();
   const { cartItems } = useContext(CartContext);
   const navigate = useNavigate();
@@ -33,97 +31,6 @@ const Navbar = () => {
               CARTIFY
             </span>
           </h1>
-
-          <div className="hidden md:flex items-center space-x-8">
-            <div className="relative">
-              <button
-                onClick={() => setShopOpen(!shopOpen)}
-                className="flex items-center space-x-1 text-gray-700 dark:text-gray-300 hover:text-amber-600"
-              >
-                <span>Shop</span>
-                <ChevronDown
-                  size={16}
-                  className={`${shopOpen ? "rotate-180" : ""}`}
-                />
-              </button>
-              {shopOpen && (
-                <div className="absolute top-full left-0 mt-2 w-48 bg-white dark:bg-gray-800 rounded-lg shadow-lg py-2">
-                  <a
-                    href="#"
-                    className="block px-4 py-2 text-gray-700 dark:text-gray-300 hover:bg-amber-50 dark:hover:bg-gray-700"
-                  >
-                    All Products
-                  </a>
-                  <a
-                    href="#"
-                    className="block px-4 py-2 text-gray-700 dark:text-gray-300 hover:bg-amber-50 dark:hover:bg-gray-700"
-                  >
-                    New Arrivals
-                  </a>
-                  <a
-                    href="#"
-                    className="block px-4 py-2 text-gray-700 dark:text-gray-300 hover:bg-amber-50 dark:hover:bg-gray-700"
-                  >
-                    Best Sellers
-                  </a>
-                </div>
-              )}
-            </div>
-
-            <div className="relative">
-              <button
-                onClick={() => setCategoriesOpen(!categoriesOpen)}
-                className="flex items-center space-x-1 text-gray-700 dark:text-gray-300 hover:text-amber-600"
-              >
-                <span>Categories</span>
-                <ChevronDown
-                  size={16}
-                  className={`${categoriesOpen ? "rotate-180" : ""}`}
-                />
-              </button>
-              {categoriesOpen && (
-                <div className="absolute top-full left-0 mt-2 w-56 bg-white dark:bg-gray-800 rounded-lg shadow-lg py-2">
-                  <a
-                    href="#"
-                    className="block px-4 py-2 text-gray-700 dark:text-gray-300 hover:bg-amber-50 dark:hover:bg-gray-700"
-                  >
-                    Makeup
-                  </a>
-                  <a
-                    href="#"
-                    className="block px-4 py-2 text-gray-700 dark:text-gray-300 hover:bg-amber-50 dark:hover:bg-gray-700"
-                  >
-                    Skincare
-                  </a>
-                  <a
-                    href="#"
-                    className="block px-4 py-2 text-gray-700 dark:text-gray-300 hover:bg-amber-50 dark:hover:bg-gray-700"
-                  >
-                    Fragrance
-                  </a>
-                  <a
-                    href="#"
-                    className="block px-4 py-2 text-gray-700 dark:text-gray-300 hover:bg-amber-50 dark:hover:bg-gray-700"
-                  >
-                    Hair Care
-                  </a>
-                  <a
-                    href="#"
-                    className="block px-4 py-2 text-gray-700 dark:text-gray-300 hover:bg-amber-50 dark:hover:bg-gray-700"
-                  >
-                    Tools
-                  </a>
-                </div>
-              )}
-            </div>
-
-            <a
-              href="#"
-              className="text-gray-700 dark:text-gray-300 hover:text-amber-600"
-            >
-              Sale
-            </a>
-          </div>
 
           <div className="flex items-center space-x-4">
             <div className="hidden md:flex items-center bg-gray-100 dark:bg-gray-800 rounded-full px-3 py-1.5">
