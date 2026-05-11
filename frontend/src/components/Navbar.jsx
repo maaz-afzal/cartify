@@ -14,7 +14,7 @@ import {
 import { useTheme } from "../context/ThemeContext";
 import { useNavigate, Link } from "react-router-dom";
 
-const Navbar = () => {
+const Navbar = ({ searchTerm, setSearchTerm }) => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [searchOpen, setSearchOpen] = useState(false);
   const { theme, toggleTheme } = useTheme();
@@ -63,6 +63,8 @@ const Navbar = () => {
               <input
                 type="text"
                 placeholder="Search..."
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
                 className="bg-transparent outline-none text-sm ml-2 w-40 dark:text-white placeholder:text-gray-500 dark:placeholder:text-gray-400"
               />
             </div>
@@ -156,11 +158,14 @@ const Navbar = () => {
       {mobileMenuOpen && (
         <div className="md:hidden bg-white dark:bg-gray-900 border-t border-gray-200 dark:border-gray-700 py-4 px-4 shadow-lg transition-colors duration-300">
           <div className="flex flex-col space-y-4">
+            {/* 👇 CHANGE 3: Mobile search - value and onChange add karo */}
             <div className="flex items-center bg-gray-100 dark:bg-gray-800 rounded-full px-3 py-2">
               <Search size={18} className="text-gray-500 dark:text-gray-400" />
               <input
                 type="text"
                 placeholder="Search products..."
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
                 className="bg-transparent outline-none text-sm ml-2 flex-1 dark:text-white placeholder:text-gray-500 dark:placeholder:text-gray-400"
               />
             </div>

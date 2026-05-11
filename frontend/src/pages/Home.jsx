@@ -4,7 +4,7 @@ import productService from "../services/productService";
 import ProductCard from "../components/ProductCard";
 import Hero from "../components/Hero";
 
-const Home = () => {
+const Home = ({ searchTerm, setSearchTerm }) => {
   const [allProducts, setAllProducts] = useState([]);
   const [filteredProducts, setFilteredProducts] = useState([]);
   const [selectedCategory, setSelectedCategory] = useState("All");
@@ -24,6 +24,7 @@ const Home = () => {
   useEffect(() => {
     let result = [...allProducts];
 
+    // Category filter
     if (selectedCategory !== "All") {
       result = result.filter(
         (p) =>
@@ -31,6 +32,7 @@ const Home = () => {
       );
     }
 
+    // Brand Filter
     if (selectedBrand !== "All") {
       if (selectedBrand === "No Brand") {
         result = result.filter((p) => !p.brand);
@@ -39,6 +41,21 @@ const Home = () => {
       }
     }
 
+    // Search Filter
+    if (searchTerm && searchTerm.trim() !== "") {
+      const searchLower = searchTerm.toLowerCase();
+      result = result.filter((product) => {
+        return (
+          product.name?.toLowerCase().includes(searchLower) ||
+          product.category?.toLowerCase().includes(searchLower) ||
+          product.brand?.toLowerCase().includes(searchLower) ||
+          product.description?.toLowerCase().includes(searchLower) ||
+          product.tags?.some((tag) => tag.toLowerCase().includes(searchLower))
+        );
+      });
+    }
+
+    // Sorting
     if (sortOrder === "az") {
       result.sort((a, b) => (a.name || "").localeCompare(b.name || ""));
     } else if (sortOrder === "za") {
@@ -46,7 +63,7 @@ const Home = () => {
     }
 
     setFilteredProducts(result);
-  }, [selectedCategory, selectedBrand, sortOrder, allProducts]);
+  }, [selectedCategory, selectedBrand, sortOrder, allProducts, searchTerm]);
 
   const uniqueCategories = [
     "All",
@@ -72,11 +89,20 @@ const Home = () => {
 
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-950 transition-colors duration-300">
-      <Navbar />
+      <Navbar searchTerm={searchTerm} setSearchTerm={setSearchTerm} />
       <Hero />
 
+      {searchTerm && (
+        <div className="max-w-7xl mx-auto px-4 mt-4">
+          <div className="text-center text-sm text-gray-600 dark:text-gray-400">
+            Found {filteredProducts.length} results for "
+            <span className="font-semibold">{searchTerm}</span>"
+          </div>
+        </div>
+      )}
+
       {/* Filter Section */}
-      <div className="bg-white dark:bg-gray-900 border-y border-gray-200 dark:border-gray-800 max-w-7xl mx-auto rounded-2xl shadow-sm transition-colors duration-300">
+      <div className="bg-white dark:bg-gray-900 border-y border-gray-200 dark:border-gray-800 max-w-7xl mx-auto rounded-2xl shadow-sm transition-colors duration-300 mt-5">
         <div className="max-w-7xl mx-auto px-4 py-4 flex flex-wrap items-center justify-center gap-6">
           {/* Category Dropdown */}
           <div className="flex items-center gap-2">
@@ -139,9 +165,17 @@ const Home = () => {
             <ProductCard key={product._id} product={product} />
           ))}
         </div>
+
         {filteredProducts.length === 0 && (
           <div className="text-center py-20 text-gray-500 dark:text-gray-400 italic">
-            No products found matching the filters.
+            {searchTerm ? (
+              <>
+                No products found matching "
+                <span className="font-semibold">{searchTerm}</span>"
+              </>
+            ) : (
+              "No products found matching the filters."
+            )}
           </div>
         )}
       </div>
