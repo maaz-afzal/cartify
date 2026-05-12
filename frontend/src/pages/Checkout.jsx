@@ -13,10 +13,12 @@ const Checkout = () => {
     phone: "",
   });
 
+  // function that handle form data
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
+  // function that handle form submission
   const handleSubmit = (e) => {
     e.preventDefault();
     localStorage.setItem("shippingAddress", JSON.stringify(formData));
@@ -25,14 +27,18 @@ const Checkout = () => {
 
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-950">
+
+      {/* navbar component */}
       <Navbar />
+
       <div className="max-w-4xl mx-auto px-4 py-10">
         <h1 className="text-2xl font-bold text-gray-800 dark:text-white mb-6">
           Checkout
         </h1>
 
         <div className="grid md:grid-cols-3 gap-6">
-          {/* Shipping Form */}
+
+          {/* shipping form */}
           <div className="md:col-span-2 bg-white dark:bg-gray-900 rounded-lg shadow-md p-6">
             <div className="flex items-center gap-2 mb-4">
               <MapPin size={18} className="text-amber-500" />
@@ -99,6 +105,7 @@ const Checkout = () => {
             </form>
           </div>
 
+          {/* order summary */}
           <div className="bg-white dark:bg-gray-900 rounded-lg shadow-md p-6 h-fit">
             <h3 className="font-semibold text-gray-800 dark:text-white mb-4">
               Order Summary

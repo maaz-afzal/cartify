@@ -2,6 +2,9 @@ import React, { useState, useContext } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { AuthContext } from "../context/AuthContext";
 import authService from "../services/authService";
+import ToastNotification from "../components/ToastNotification";
+import sidePanelImage from "../assets/side-panel-image.png";
+import cartifyLogo from "../assets/cartify.png";
 
 const InputField = ({ label, type, placeholder, id, value, onChange }) => {
   return (
@@ -27,6 +30,8 @@ const InputField = ({ label, type, placeholder, id, value, onChange }) => {
 const Login = () => {
   const navigate = useNavigate();
   const { login } = useContext(AuthContext);
+  const [toast, setToast] = useState("");
+  const [loading, setLoading] = useState(false);
 
   const [formData, setFormData] = useState({
     email: "",
@@ -39,39 +44,58 @@ const Login = () => {
       ...prevData,
       [id]: value,
     }));
+    if (toast) setToast("");
   };
 
+  // handle login submission
   const handleSubmit = async (e) => {
     e.preventDefault();
+
+    // form validation
+    if (!formData.email || !formData.password) {
+      setToast("Both fields are required.");
+      return;
+    }
+
+    setLoading(true);
+
     try {
       const response = await authService.login(formData);
       if (response.token) {
         const userData = response.user || { email: formData.email };
         login(userData, response.token);
-        navigate("/");
+        setToast("Login successful!");
+        setTimeout(() => navigate("/"), 1000);
       } else {
-        console.log("No token received from backend");
+        setToast("No token received from backend");
       }
     } catch (error) {
       console.error("Login Failed:", error);
+      setToast(
+        error.response?.data?.message || "Login failed. Please try again.",
+      );
+    } finally {
+      setLoading(false);
     }
   };
 
   return (
     <div className="flex items-center justify-center min-h-screen px-6 bg-gray-100 dark:bg-gray-900 transition-colors duration-300">
+      {toast && (
+        <ToastNotification message={toast} onClose={() => setToast("")} />
+      )}
       <div className="flex w-full max-w-sm overflow-hidden bg-white dark:bg-gray-800 rounded-2xl shadow-lg lg:max-w-4xl transition-colors duration-300">
         <div
           className="hidden bg-cover lg:block lg:w-1/2"
-          style={{
-            backgroundImage: "url('./src/assets/side-panel-image.png')",
-          }}
+          style={{ backgroundImage: `url(${sidePanelImage})` }}
         ></div>
 
         <div className="w-full px-6 py-8 md:px-8 lg:w-1/2">
           <div className="flex justify-center mx-auto">
             <img
               className="w-auto h-7 sm:h-20"
-              src="./src/assets/cartify.png"
+              style={{ backgroundImage: `url(${cartifyLogo})` }}
+              src={cartifyLogo}
               alt="Cartify Logo"
             />
           </div>
@@ -102,9 +126,14 @@ const Login = () => {
             <div className="mt-6">
               <button
                 type="submit"
-                className="w-full px-6 py-3 text-sm font-medium tracking-wide text-white capitalize transition-colors duration-300 transform bg-amber-500 rounded-lg hover:bg-amber-600 focus:outline-none focus:ring focus:ring-amber-300 focus:ring-opacity-50"
+                disabled={loading}
+                className={`w-full px-6 py-3 text-sm font-medium tracking-wide text-white capitalize transition-colors duration-300 transform rounded-lg focus:outline-none focus:ring focus:ring-amber-300 focus:ring-opacity-50 ${
+                  loading
+                    ? "bg-amber-400 cursor-not-allowed"
+                    : "bg-amber-500 hover:bg-amber-600"
+                }`}
               >
-                Login
+                {loading ? "Logging in..." : "Login"}
               </button>
             </div>
           </form>

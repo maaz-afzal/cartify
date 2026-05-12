@@ -55,7 +55,7 @@ const Home = ({ searchTerm, setSearchTerm }) => {
       });
     }
 
-    // Sorting
+    // Sorting products
     if (sortOrder === "az") {
       result.sort((a, b) => (a.name || "").localeCompare(b.name || ""));
     } else if (sortOrder === "za") {
@@ -104,6 +104,7 @@ const Home = ({ searchTerm, setSearchTerm }) => {
       {/* Filter Section */}
       <div className="bg-white dark:bg-gray-900 border-y border-gray-200 dark:border-gray-800 max-w-7xl mx-auto rounded-2xl shadow-sm transition-colors duration-300 mt-5">
         <div className="max-w-7xl mx-auto px-4 py-4 flex flex-wrap items-center justify-center gap-6">
+
           {/* Category Dropdown */}
           <div className="flex items-center gap-2">
             <span className="text-sm font-medium text-gray-500 dark:text-gray-400">
@@ -158,7 +159,7 @@ const Home = ({ searchTerm, setSearchTerm }) => {
         </div>
       </div>
 
-      {/* Products Grid */}
+      {/* products grid */}
       <div className="max-w-7xl mx-auto px-4 py-8">
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
           {filteredProducts.map((product) => (

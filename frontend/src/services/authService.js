@@ -1,5 +1,6 @@
 import api from "./api";
 
+// signup
 const signup = async (data) => {
   try {
     const res = await api.post("/api/auth/signup", data);
@@ -10,6 +11,7 @@ const signup = async (data) => {
   }
 };
 
+// login
 const login = async (data) => {
   try {
     const res = await api.post("/api/auth/login", data);

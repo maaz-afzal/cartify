@@ -133,28 +133,9 @@ const updateCart = async (req, res) => {
   }
 };
 
-// Clearing Overall cart items
-
-const clearCart = async (req, res) => {
-  try {
-    const userId = req.user.userId;
-    const cart = await Cart.findOne({ userId });
-    if (!cart) {
-      return res.status(404).json({ message: "Cart not found" });
-    }
-
-    cart.cartItems = [];
-    await cart.save();
-    res.status(200).json(cart);
-  } catch (error) {
-    res.status(500).json({ message: "Internal Server Error" });
-  }
-};
-
 module.exports = {
   getCart,
   addToCart,
   removeFromCart,
   updateCart,
-  clearCart,
 };

@@ -44,15 +44,4 @@ const updateCart = async (id, data) => {
   }
 };
 
-// Function to clear cart
-const clearCart = async () => {
-  try {
-    const res = await api.delete("/api/cart/clear");
-    return res.data;
-  } catch (error) {
-    console.log(error);
-    throw error;
-  }
-};
-
-export default { getCart, addToCart, removeFromCart, updateCart, clearCart };
+export default { getCart, addToCart, removeFromCart, updateCart };

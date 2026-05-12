@@ -1,8 +1,10 @@
-import React, { useState } from "react";
+import React, { useState, useContext } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import authService from "../services/authService";
 import { AuthContext } from "../context/AuthContext";
-import { useContext } from "react";
+import ToastNotification from "../components/ToastNotification";
+import sidePanelImage from "../assets/side-panel-image.png";
+import cartifyLogo from "../assets/cartify.png";
 
 const InputField = ({ label, type, placeholder, id, value, onChange }) => {
   return (
@@ -28,6 +30,9 @@ const InputField = ({ label, type, placeholder, id, value, onChange }) => {
 const Signup = () => {
   const navigate = useNavigate();
   const { signup } = useContext(AuthContext);
+  const [toast, setToast] = useState("");
+  const [loading, setLoading] = useState(false);
+
   const [formData, setFormData] = useState({
     name: "",
     email: "",
@@ -41,37 +46,82 @@ const Signup = () => {
       ...prevData,
       [id]: value,
     }));
+    if (toast) setToast("");
   };
 
+  // form validation
+  const validateForm = () => {
+    if (!formData.name.trim()) {
+      setToast("Full name is required");
+      return false;
+    }
+    if (!formData.email) {
+      setToast("Email is required");
+      return false;
+    }
+    if (!formData.email.includes("@")) {
+      setToast("Please enter a valid email address");
+      return false;
+    }
+    if (!formData.password) {
+      setToast("Password is required");
+      return false;
+    }
+    if (formData.password.length < 6) {
+      setToast("Password must be at least 6 characters");
+      return false;
+    }
+    return true;
+  };
+
+  // handle signup submission
   const handleSubmit = async (e) => {
     e.preventDefault();
+
+    if (!validateForm()) return;
+
+    setLoading(true);
+
     try {
       const response = await authService.signup(formData);
       if (response.token) {
-        const userData = response.user || { email: formData.email };
+        const userData = response.user || {
+          name: formData.name,
+          email: formData.email,
+        };
         signup(userData, response.token);
+        setToast("Account created successfully!");
+        setTimeout(() => navigate("/"), 1000);
+      } else {
+        setToast("No token received from backend");
       }
-      navigate("/");
     } catch (error) {
       console.log("Signup failed:", error);
+      setToast(
+        error.response?.data?.message || "Signup failed. Please try again.",
+      );
+    } finally {
+      setLoading(false);
     }
   };
 
   return (
     <div className="flex items-center justify-center min-h-screen px-6 bg-gray-100 dark:bg-gray-900 transition-colors duration-300">
+      {toast && (
+        <ToastNotification message={toast} onClose={() => setToast("")} />
+      )}
       <div className="flex w-full max-w-sm overflow-hidden bg-white dark:bg-gray-800 rounded-2xl shadow-lg lg:max-w-4xl transition-colors duration-300">
         <div
           className="hidden bg-cover lg:block lg:w-1/2"
-          style={{
-            backgroundImage: "url('./src/assets/side-panel-image.png')",
-          }}
+          style={{ backgroundImage: `url(${sidePanelImage})` }}
         ></div>
 
         <div className="w-full px-6 py-8 md:px-8 lg:w-1/2">
           <div className="flex justify-center mx-auto">
             <img
               className="w-auto h-7 sm:h-20"
-              src="./src/assets/cartify.png"
+              style={{ backgroundImage: `url(${cartifyLogo})` }}
+              src={cartifyLogo}
               alt="Cartify Logo"
             />
           </div>
@@ -111,9 +161,14 @@ const Signup = () => {
             <div className="mt-6">
               <button
                 type="submit"
-                className="w-full px-6 py-3 text-sm font-medium tracking-wide text-white capitalize transition-colors duration-300 transform bg-amber-500 rounded-lg hover:bg-amber-600 focus:outline-none focus:ring focus:ring-amber-300 focus:ring-opacity-50"
+                disabled={loading}
+                className={`w-full px-6 py-3 text-sm font-medium tracking-wide text-white capitalize transition-colors duration-300 transform rounded-lg focus:outline-none focus:ring focus:ring-amber-300 focus:ring-opacity-50 ${
+                  loading
+                    ? "bg-amber-400 cursor-not-allowed"
+                    : "bg-amber-500 hover:bg-amber-600"
+                }`}
               >
-                Sign Up
+                {loading ? "Creating Account..." : "Sign Up"}
               </button>
             </div>
           </form>

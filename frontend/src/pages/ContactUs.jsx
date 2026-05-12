@@ -4,6 +4,7 @@ import ToastNotification from "../components/ToastNotification";
 
 import { Mail, Phone, MapPin } from "lucide-react";
 
+// function that handle contact form data
 const ContactUs = () => {
   const [formData, setFormData] = useState({
     name: "",
@@ -13,6 +14,7 @@ const ContactUs = () => {
 
   const [toast, setToast] = useState("");
 
+  // change handler
   const handleChange = (e) => {
     setFormData({
       ...formData,
@@ -40,6 +42,8 @@ const ContactUs = () => {
 
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-950">
+
+      {/* navbar component */}
       <Navbar />
 
       <div className="max-w-5xl mx-auto px-4 py-10">
@@ -96,6 +100,7 @@ const ContactUs = () => {
               Send Message
             </h2>
 
+            {/* contact us form */}
             <form onSubmit={handleSubmit} className="space-y-4">
               <div>
                 <label className="text-sm text-gray-600 dark:text-gray-300">

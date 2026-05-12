@@ -23,6 +23,7 @@ const Favorites = () => {
     loadFavorites();
   }, [isLoggedin]);
 
+  // function that remove favorite
   const handleRemove = async (productId, productName) => {
     await removeFromFavorites(productId);
     setToast(`${productName} removed from favorites`);
@@ -96,6 +97,8 @@ const Favorites = () => {
       {toast && (
         <ToastNotification message={toast} onClose={() => setToast("")} />
       )}
+
+      {/* displaying navbar component */}
       <Navbar />
 
       <div className="max-w-7xl mx-auto px-4 py-8">
@@ -105,6 +108,8 @@ const Favorites = () => {
         </h1>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+
+          {/* displying favorite items */}
           {favorites.map((item) => {
 
             const product =

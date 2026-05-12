@@ -1,6 +1,7 @@
 import React, { useContext, useState } from "react";
 import { CartContext } from "../context/CartContext";
 import { AuthContext } from "../context/AuthContext";
+import cartifyLogo from "../assets/cartify.png";
 import {
   Search,
   ShoppingBag,
@@ -42,12 +43,13 @@ const Navbar = ({ searchTerm, setSearchTerm }) => {
           {/* Logo */}
           <Link
             to="/"
-            className="text-2xl font-bold shrink-0 flex items-center gap-2.5"
+            className="text-2xl font-bold shrink-0 flex items-center"
           >
             <img
-              src="./src/assets/cartify-logo.png"
-              alt=""
-              className="w-8 object-cover"
+              style={{ backgroundImage: `url(${cartifyLogo})` }}
+              src={cartifyLogo}
+              alt="cartify logo"
+              className="w-13 object-cover"
             />
             <span className="bg-linear-to-r from-amber-700 to-amber-500 bg-clip-text text-transparent">
               CARTIFY

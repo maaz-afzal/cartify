@@ -63,7 +63,6 @@ const Cart = () => {
       return;
     }
 
-    // Apply discount
     setAppliedDiscount(discount);
 
     if (discount.isFreeShipping) {
@@ -79,6 +78,7 @@ const Cart = () => {
     setDiscountError("");
   };
 
+  // function that remove discount
   const removeDiscount = () => {
     setAppliedDiscount(null);
     setDiscountPercent(0);
@@ -118,19 +118,19 @@ const Cart = () => {
     fetchProductDetails();
   }, [cartItems]);
 
+  // function that handle quantity changing
   const handleQuantityChange = async (itemId, newQuantity) => {
     if (newQuantity < 1) return;
     await updateCart(itemId, { quantity: newQuantity });
-    // Remove discount when cart changes
     if (appliedDiscount) {
       removeDiscount();
     }
     setToast("Cart updated successfully!");
   };
 
+  // function that remove item from cart
   const handleRemoveItem = async (itemId) => {
     await removeFromCart(itemId);
-    // Remove discount when cart changes
     if (appliedDiscount) {
       removeDiscount();
     }
@@ -141,6 +141,7 @@ const Cart = () => {
     return productsMap[productId] || {};
   };
 
+  // function to calculate the subtotal
   const calculateSubtotal = () => {
     return cartItems.reduce(
       (total, item) => total + item.price * item.quantity,
@@ -148,21 +149,23 @@ const Cart = () => {
     );
   };
 
+  // funtion to calculate the shipping cost
   const calculateShipping = () => {
     const subtotal = calculateSubtotal();
-    // Free shipping if applied discount has free shipping OR subtotal > 50
     if (appliedDiscount?.isFreeShipping || subtotal > 50) {
       return 0;
     }
     return 5;
   };
 
+  // function to calculate discount amount
   const calculateDiscountAmount = () => {
     const subtotal = calculateSubtotal();
     if (appliedDiscount?.isFreeShipping) return 0;
     return (subtotal * discountPercent) / 100;
   };
 
+  // function to calculate total
   const calculateTotal = () => {
     const subtotal = calculateSubtotal();
     const discount = calculateDiscountAmount();
@@ -170,10 +173,13 @@ const Cart = () => {
     return subtotal - discount + shipping;
   };
 
+  // check for the user authentication
   if (!isLoggedin) {
     return (
       <div className="min-h-screen bg-gray-50 dark:bg-gray-950 transition-colors duration-300">
+        {/* navbar component in cart page */}
         <Navbar />
+
         <div className="max-w-7xl mx-auto px-4 py-20 text-center">
           <ShoppingBag
             size={64}
@@ -210,6 +216,7 @@ const Cart = () => {
     );
   }
 
+  // checking cart length
   if (cartItems.length === 0) {
     return (
       <div className="min-h-screen bg-gray-50 dark:bg-gray-950 transition-colors duration-300">
@@ -262,6 +269,7 @@ const Cart = () => {
                 <div className="col-span-2 text-center">Total</div>
               </div>
 
+              {/* displaying cart items */}
               {cartItems.map((item) => {
                 const product = getProduct(item.productId);
                 return (
@@ -409,7 +417,7 @@ const Cart = () => {
                     <p className="text-red-500 text-sm mt-2">{discountError}</p>
                   )}
 
-                  {/* Available Discounts */}
+                  {/* available discounts */}
                   <div className="mt-4 pt-3 border-t border-gray-200 dark:border-gray-800">
                     <p className="text-xs text-gray-500 dark:text-gray-400 mb-2">
                       Available offers:
@@ -433,7 +441,7 @@ const Cart = () => {
               )}
             </div>
 
-            {/* Order Summary */}
+            {/* order summary */}
             <div className="bg-white dark:bg-gray-900 rounded-lg shadow-md p-6 transition-colors duration-300 mt-5">
               <h2 className="text-lg font-semibold text-gray-800 dark:text-white mb-4">
                 Order Summary
@@ -478,7 +486,7 @@ const Cart = () => {
 
               {subtotal > 50 && !appliedDiscount?.isFreeShipping && (
                 <p className="text-xs text-green-600 dark:text-green-400 mt-2 text-center">
-                  ✨ You've qualified for free shipping!
+                  You've qualified for free shipping!
                 </p>
               )}
 
