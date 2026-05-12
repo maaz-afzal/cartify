@@ -2,6 +2,7 @@ import React, { createContext, useContext, useEffect, useState } from "react";
 
 const ThemeContext = createContext();
 
+// ThemeProvider component
 export const ThemeProvider = ({ children }) => {
   const [theme, setTheme] = useState("light");
 
@@ -16,12 +17,12 @@ export const ThemeProvider = ({ children }) => {
       setTheme("light");
       root.classList.remove("dark");
     } else {
-      // Default to light mode
       localStorage.setItem("theme", "light");
       root.classList.remove("dark");
     }
   }, []);
 
+  // toggle theme function
   const toggleTheme = () => {
     const root = document.documentElement;
 

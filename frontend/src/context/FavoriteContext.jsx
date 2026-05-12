@@ -46,14 +46,11 @@ export const FavoriteProvider = ({ children }) => {
     try {
       const data = await favoriteService.removeFromFavorites(productId);
 
-      // AGAR BACKEND POPULATED DATA BHEJ RAHA HAI (Step 1 ke baad):
       if (data && data.favorite && data.favorite.products) {
         setFavorites(data.favorite.products);
       } else {
-        // FALLBACK: Agar backend sirf message bheje, toh frontend se manually remove karein
         setFavorites((prevFavorites) =>
           prevFavorites.filter((item) => {
-            // Handle both object ID and string ID cases
             const itemId = item.productId._id
               ? item.productId._id
               : item.productId;

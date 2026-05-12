@@ -24,7 +24,7 @@ const Navbar = ({ searchTerm, setSearchTerm }) => {
 
   const handleCartDisplay = () => {
     navigate("/cart");
-    setMobileMenuOpen(false); // Close mobile menu on navigation
+    setMobileMenuOpen(false);
   };
 
   const handleLogout = () => {
@@ -40,13 +40,21 @@ const Navbar = ({ searchTerm, setSearchTerm }) => {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center h-16">
           {/* Logo */}
-          <Link to="/" className="text-2xl font-bold shrink-0">
+          <Link
+            to="/"
+            className="text-2xl font-bold shrink-0 flex items-center gap-2.5"
+          >
+            <img
+              src="./src/assets/cartify-logo.png"
+              alt=""
+              className="w-8 object-cover"
+            />
             <span className="bg-linear-to-r from-amber-700 to-amber-500 bg-clip-text text-transparent">
               CARTIFY
             </span>
           </Link>
 
-          {/* Desktop Navigation */}
+          {/* navigation links */}
           <div className="hidden md:flex items-center space-x-6">
             {/* Links */}
             <div className="flex items-center space-x-6 mr-4">
@@ -70,7 +78,6 @@ const Navbar = ({ searchTerm, setSearchTerm }) => {
               </Link>
             </div>
 
-            {/* Search Bar (Only if props are provided) */}
             {setSearchTerm && (
               <div className="flex items-center bg-gray-100 dark:bg-gray-800 rounded-full px-3 py-1.5 border border-transparent focus-within:border-amber-500 transition-all">
                 <Search
@@ -87,7 +94,7 @@ const Navbar = ({ searchTerm, setSearchTerm }) => {
               </div>
             )}
 
-            {/* Icons & Actions */}
+            {/* Icons */}
             <div className="flex items-center space-x-4 border-l pl-4 border-gray-200 dark:border-gray-700">
               <Link
                 to="/favorites"
@@ -118,7 +125,7 @@ const Navbar = ({ searchTerm, setSearchTerm }) => {
                 )}
               </button>
 
-              {/* User Auth Section */}
+              {/* login and signup buttons */}
               {isLoggedin ? (
                 <div className="flex items-center space-x-3 pl-2">
                   <div className="flex items-center space-x-2 text-gray-700 dark:text-gray-300">
@@ -154,7 +161,7 @@ const Navbar = ({ searchTerm, setSearchTerm }) => {
             </div>
           </div>
 
-          {/* Mobile Menu Button & Icons */}
+          {/* menu button on moile screen */}
           <div className="flex items-center space-x-4 md:hidden">
             <Link
               to="/favorites"
@@ -185,7 +192,7 @@ const Navbar = ({ searchTerm, setSearchTerm }) => {
         </div>
       </div>
 
-      {/* Mobile Menu Dropdown */}
+      {/* mobile dropdown menu */}
       {mobileMenuOpen && (
         <div className="md:hidden bg-white dark:bg-gray-900 border-t border-gray-200 dark:border-gray-700 shadow-lg absolute w-full left-0 z-40">
           <div className="px-4 pt-4 pb-6 space-y-4">
@@ -206,7 +213,7 @@ const Navbar = ({ searchTerm, setSearchTerm }) => {
               </div>
             )}
 
-            {/* Mobile Links */}
+            {/* mobile links */}
             <div className="flex flex-col space-y-2">
               <Link
                 to="/"
@@ -230,7 +237,7 @@ const Navbar = ({ searchTerm, setSearchTerm }) => {
                 Contact
               </Link>
 
-              {/* Theme Toggle in Mobile Menu */}
+              {/* theme toggle on mobile screen */}
               <button
                 onClick={toggleTheme}
                 className="flex items-center space-x-2 text-gray-700 dark:text-gray-300 py-2 px-2 rounded hover:bg-gray-100 dark:hover:bg-gray-800 transition w-full text-left"
@@ -240,7 +247,7 @@ const Navbar = ({ searchTerm, setSearchTerm }) => {
               </button>
             </div>
 
-            {/* Mobile Auth Section */}
+            {/* mobile view login and signup */}
             <div className="pt-4 border-t border-gray-200 dark:border-gray-700">
               {!isLoggedin ? (
                 <div className="grid grid-cols-2 gap-3">

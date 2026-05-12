@@ -12,6 +12,7 @@ const ProductCard = ({ product }) => {
   const [toast, setToast] = useState("");
   const [isFav, setIsFav] = useState(isFavorite(product._id));
 
+  // Add to cart button function
   const handleAddToCart = (e) => {
     e.preventDefault();
     e.stopPropagation();
@@ -19,6 +20,7 @@ const ProductCard = ({ product }) => {
     setToast("Added to cart!");
   };
 
+  // Add to favorites button function
   const handleFavorite = async (e) => {
     e.preventDefault();
     e.stopPropagation();
@@ -47,7 +49,8 @@ const ProductCard = ({ product }) => {
         <ToastNotification message={toast} onClose={() => setToast("")} />
       )}
       <div className="bg-white dark:bg-gray-900 border border-gray-100 dark:border-gray-800 rounded-2xl overflow-hidden shadow-sm hover:shadow-xl transition-all duration-300 relative">
-        {/* Favorite button */}
+
+        {/* favorite button */}
         <button
           onClick={handleFavorite}
           className="absolute top-3 right-3 z-10 p-2 rounded-full bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm hover:scale-110 transition"
@@ -62,7 +65,7 @@ const ProductCard = ({ product }) => {
           />
         </button>
 
-        {/* Image */}
+        {/* product image */}
         <div className="relative h-52 overflow-hidden bg-gray-100 dark:bg-gray-800">
           <img
             src={image}

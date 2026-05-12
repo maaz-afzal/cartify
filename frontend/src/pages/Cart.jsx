@@ -1,5 +1,5 @@
 import React, { useContext, useState, useEffect } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { CartContext } from "../context/CartContext";
 import { AuthContext } from "../context/AuthContext";
 import Navbar from "../components/Navbar";
@@ -11,6 +11,7 @@ const Cart = () => {
   const { cartItems, removeFromCart, updateCart, getCart } =
     useContext(CartContext);
   const { isLoggedin } = useContext(AuthContext);
+  const navigate = useNavigate();
   const [loading, setLoading] = useState(true);
   const [productsMap, setProductsMap] = useState({});
   const [toast, setToast] = useState("");
@@ -35,11 +36,13 @@ const Cart = () => {
     },
   ]);
 
+  // discount handle function
   const handleDiscountChange = (e) => {
     setDiscountCode(e.target.value.toUpperCase());
     setDiscountError("");
   };
 
+  // function to apply discout
   const applyDiscount = () => {
     if (!discountCode.trim()) {
       setDiscountError("Please enter a discount code");
@@ -479,7 +482,10 @@ const Cart = () => {
                 </p>
               )}
 
-              <button className="w-full mt-6 bg-amber-500 hover:bg-amber-600 text-white py-3 rounded-lg font-medium transition">
+              <button
+                onClick={() => navigate("/checkout")}
+                className="w-full mt-6 bg-amber-500 hover:bg-amber-600 text-white py-3 rounded-lg font-medium transition"
+              >
                 Proceed to Checkout
               </button>
 

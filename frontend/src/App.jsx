@@ -10,6 +10,8 @@ import NotFound from "./pages/NotFound.jsx";
 import About from "./pages/AboutUs.jsx";
 import ContactUs from "./pages/ContactUs.jsx";
 import Favorites from "./pages/Favorites.jsx";
+import Checkout from "./pages/Checkout.jsx";
+import OrderSuccess from "./pages/OrderSuccess.jsx";
 
 const App = () => {
   const [searchTerm, setSearchTerm] = useState("");
@@ -26,6 +28,8 @@ const App = () => {
         <Route path="/about" element={<About />} />
         <Route path="/contact" element={<ContactUs />} />
         <Route path="/favorites" element={<Favorites />} />
+        <Route path="/checkout" element={<Checkout />} />
+        <Route path="/order-success" element={<OrderSuccess />} />
         <Route path="/login" element={<Login />} />
         <Route path="/signup" element={<Signup />} />
         <Route path="/cart" element={<Cart />} />
