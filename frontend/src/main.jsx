@@ -5,13 +5,16 @@ import { BrowserRouter } from "react-router-dom";
 import AuthProvider from "./context/AuthContext.jsx";
 import CartProvider from "./context/CartContext.jsx";
 import { ThemeProvider } from "./context/ThemeContext.jsx";
+import FavoriteProvider from "./context/FavoriteContext.jsx";
 
 createRoot(document.getElementById("root")).render(
   <BrowserRouter>
     <ThemeProvider>
       <AuthProvider>
         <CartProvider>
-          <App />
+          <FavoriteProvider>
+            <App />
+          </FavoriteProvider>
         </CartProvider>
       </AuthProvider>
     </ThemeProvider>

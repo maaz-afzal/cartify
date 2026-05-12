@@ -1,7 +1,7 @@
 const Favorite = require("../models/Favorite");
 const Product = require("../models/Product");
 
-// Get favorites
+// Get the favorites
 const getFavorites = async (req, res) => {
   try {
     const userId = req.user.userId;
@@ -13,20 +13,19 @@ const getFavorites = async (req, res) => {
       return res.status(200).json({ products: [] });
     }
 
-    res.status(200).json(favorite);
+    res.status(200).json({ products: favorite.products });
   } catch (error) {
     console.error(error);
     res.status(500).json({ message: "Internal Server Error" });
   }
 };
 
-// Add favorites
+// adding products to favorites
 const addToFavorites = async (req, res) => {
   try {
     const userId = req.user.userId;
     const { productId } = req.body;
 
-    // Check if product exists
     const product = await Product.findById(productId);
     if (!product) {
       return res.status(404).json({ message: "Product not found" });
@@ -48,7 +47,9 @@ const addToFavorites = async (req, res) => {
     );
 
     if (alreadyExists) {
-      return res.status(400).json({ message: "Product already in favorites" });
+      return res
+        .status(400)
+        .json({ message: "Product is already in favorites" });
     }
 
     favorite.products.push({ productId });
@@ -61,7 +62,7 @@ const addToFavorites = async (req, res) => {
   }
 };
 
-// Remove favorite
+// Remove from favorites
 const removeFromFavorites = async (req, res) => {
   try {
     const userId = req.user.userId;
@@ -79,7 +80,15 @@ const removeFromFavorites = async (req, res) => {
 
     await favorite.save();
 
-    res.status(200).json({ message: "Removed from favorites", favorite });
+    // CHANGE: Wapas save karte waqt populate karein taaki pura data mile
+    const updatedFavorite = await Favorite.findById(favorite._id).populate(
+      "products.productId",
+    );
+
+    res.status(200).json({
+      message: "Removed from favorites",
+      favorite: updatedFavorite, // Ab isme pura product data hoga
+    });
   } catch (error) {
     console.error(error);
     res.status(500).json({ message: "Internal Server Error" });

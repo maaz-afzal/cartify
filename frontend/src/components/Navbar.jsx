@@ -10,6 +10,7 @@ import {
   Sun,
   User,
   LogOut,
+  Heart,
 } from "lucide-react";
 import { useTheme } from "../context/ThemeContext";
 import { useNavigate, Link } from "react-router-dom";
@@ -61,6 +62,12 @@ const Navbar = ({ searchTerm, setSearchTerm }) => {
               className="text-gray-700 dark:text-gray-300 hover:text-amber-600 dark:hover:text-amber-500 transition"
             >
               Contact Us
+            </Link>
+            <Link
+              to="/favorites"
+              className="relative text-gray-700 dark:text-gray-300 hover:text-amber-600 dark:hover:text-amber-500 transition"
+            >
+              <Heart size={22} />
             </Link>
 
             {/* Search Bar */}
@@ -119,6 +126,7 @@ const Navbar = ({ searchTerm, setSearchTerm }) => {
             )}
 
             {/* Cart Button */}
+
             <button
               className="relative text-gray-700 dark:text-gray-300 hover:text-amber-600 dark:hover:text-amber-500 transition"
               onClick={handleCartDisplay}
@@ -198,6 +206,13 @@ const Navbar = ({ searchTerm, setSearchTerm }) => {
               className="text-gray-700 dark:text-gray-300 py-2 hover:text-amber-600 dark:hover:text-amber-500 transition"
             >
               Contact
+            </Link>
+            <Link
+              to="/favorites"
+              onClick={() => setMobileMenuOpen(false)}
+              className="text-gray-700 dark:text-gray-300 py-2 hover:text-amber-600 dark:hover:text-amber-500 transition"
+            >
+              Favorites
             </Link>
 
             {!isLoggedin ? (

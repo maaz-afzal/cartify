@@ -9,6 +9,7 @@ import ProductDetail from "./pages/ProductDetail.jsx";
 import NotFound from "./pages/NotFound.jsx";
 import About from "./pages/AboutUs.jsx";
 import ContactUs from "./pages/ContactUs.jsx";
+import Favorites from "./pages/Favorites.jsx";
 
 const App = () => {
   const [searchTerm, setSearchTerm] = useState("");
@@ -24,6 +25,7 @@ const App = () => {
         />
         <Route path="/about" element={<About />} />
         <Route path="/contact" element={<ContactUs />} />
+        <Route path="/favorites" element={<Favorites />} />
         <Route path="/login" element={<Login />} />
         <Route path="/signup" element={<Signup />} />
         <Route path="/cart" element={<Cart />} />
