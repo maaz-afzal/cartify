@@ -13,7 +13,6 @@ const signup = async (data) => {
 const login = async (data) => {
   try {
     const res = await api.post("/api/auth/login", data);
-    console.log(res.data);
     return res.data;
   } catch (error) {
     console.log(error);

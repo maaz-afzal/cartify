@@ -1,7 +1,7 @@
 require("dotenv").config()
-const moongose = require("mongoose");
+const mongoose = require("mongoose");
 
-moongose
+mongoose
   .connect(process.env.MONGODB_URL)
   .then(() => {
     console.log("Connected to MongoDB");
@@ -10,4 +10,4 @@ moongose
     console.log("Error connecting to MongoDB", err);
   });
 
-module.exports = moongose;
+module.exports = mongoose;

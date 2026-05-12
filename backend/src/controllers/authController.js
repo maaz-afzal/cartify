@@ -2,6 +2,7 @@ const jwt = require("jsonwebtoken");
 const bcrypt = require("bcrypt");
 const User = require("../models/User");
 const { body, validationResult } = require("express-validator");
+const Cart = require("../models/Cart");
 
 const validateMiddleware = (req, res, next) => {
   const errors = validationResult(req);
@@ -37,24 +38,36 @@ const authSignUp = [
           .status(400)
           .json({ message: "Only user role allowed in signup" });
       }
+
       const existingUser = await User.findOne({ email });
       if (existingUser) {
-        res.status(400).json({ message: "User already exists" });
-      } else {
-        const hashedPassword = await bcrypt.hash(password, 10);
-        const newUser = {
-          name,
-          email,
-          password: hashedPassword,
-          role,
-        };
-        const user = await User.create(newUser);
-        res.status(201).json({
-          message: "User Successfully Signup",
-          id: user._id,
-        });
+        return res.status(400).json({ message: "User already exists" });
       }
+
+      const hashedPassword = await bcrypt.hash(password, 10);
+
+      const user = await User.create({
+        name,
+        email,
+        password: hashedPassword,
+        role,
+      });
+
+      const token = jwt.sign({ userId: user._id }, process.env.JWT_SECRET, {
+        expiresIn: "7d",
+      });
+
+      // create an empty cart for the user
+      await Cart.create({ userId: user._id, cartItems: [] });
+
+      res.status(201).json({
+        message: "User Successfully Signup",
+        id: user._id,
+        token,
+        user,
+      });
     } catch (error) {
+      console.error(error);
       res.status(500).json({ message: "Internal Server Error" });
     }
   },
@@ -75,22 +88,25 @@ const authLogin = [
   validateMiddleware,
   async (req, res) => {
     try {
-      const { email, password, role } = req.body;
+      const { email, password } = req.body;
       const user = await User.findOne({ email });
+
       if (!user) {
-        res.status(400).json({ message: "User not found" });
-      } else {
-        const isMatch = await bcrypt.compare(password, user.password);
-        if (!isMatch) {
-          res.status(400).json({ message: "Invalid credentials" });
-        } else {
-          const token = jwt.sign({ userId: user._id }, process.env.JWT_SECRET, {
-            expiresIn: "7d",
-          });
-          res.status(200).json({ token, user});
-        }
+        return res.status(400).json({ message: "User not found" });
       }
+
+      const isMatch = await bcrypt.compare(password, user.password);
+      if (!isMatch) {
+        return res.status(400).json({ message: "Invalid credentials" });
+      }
+
+      const token = jwt.sign({ userId: user._id }, process.env.JWT_SECRET, {
+        expiresIn: "7d",
+      });
+
+      res.status(200).json({ token, user });
     } catch (error) {
+      console.error(error);
       res.status(500).json({ message: "Internal Server Error" });
     }
   },

@@ -48,6 +48,17 @@ export const AuthProvider = ({ children }) => {
     setUser(userData);
   };
 
+  const signup = (userData, token) => {
+    if (!userData || !token) {
+      console.log("Invalid login data");
+      return;
+    }
+    localStorage.setItem("token", token);
+    localStorage.setItem("user", JSON.stringify(userData));
+    setIsLoggedin(true);
+    setUser(userData);
+  };
+
   const logout = () => {
     localStorage.removeItem("token");
     localStorage.removeItem("user");
@@ -56,7 +67,7 @@ export const AuthProvider = ({ children }) => {
   };
 
   return (
-    <AuthContext.Provider value={{ isLoggedin, user, login, logout }}>
+    <AuthContext.Provider value={{ isLoggedin, user, login, signup, logout }}>
       {children}
     </AuthContext.Provider>
   );

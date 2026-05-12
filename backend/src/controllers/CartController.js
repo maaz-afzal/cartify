@@ -5,12 +5,19 @@ const Product = require("../models/Product");
 const getCart = async (req, res) => {
   try {
     const userId = req.user.userId;
-    const cart = await Cart.findOne({ userId });
+    let cart = await Cart.findOne({ userId });
+
     if (!cart) {
-      return res.status(404).json({ message: "Cart not found" });
-    } else {
-      res.status(200).json(cart);
+      cart = {
+        userId,
+        cartItems: [],
+        discount: 0,
+        shippingCost: 0,
+      };
+      return res.status(200).json(cart);
     }
+
+    res.status(200).json(cart);
   } catch (error) {
     res.status(500).json({ message: "Internal Server Error" });
   }
@@ -19,21 +26,32 @@ const getCart = async (req, res) => {
 // Add items to cart
 const addToCart = async (req, res) => {
   try {
+    console.log("Request user:", req.user); // Debug log
     const userId = req.user.userId;
+    console.log("Extracted userId:", userId);
+
+    if (!userId) {
+      return res.status(401).json({ message: "User ID not found in token" });
+    }
+
     const { productId, quantity } = req.body;
-    let product = await Product.findById(productId);
+    console.log("Product ID:", productId, "Quantity:", quantity);
+
+    const product = await Product.findById(productId);
     if (!product) {
       return res.status(404).json({ message: "Product not found" });
     }
 
-    const cart = await Cart.findOne({ userId });
+    let cart = await Cart.findOne({ userId });
+
     if (!cart) {
-      const newCart = new Cart({
+      // Create new cart if doesn't exist
+      cart = new Cart({
         userId,
         cartItems: [{ productId, quantity, price: product.price }],
       });
-      await newCart.save();
-      res.status(201).json(newCart);
+      await cart.save();
+      return res.status(201).json(cart);
     } else {
       const cartItem = cart.cartItems.find(
         (item) => item.productId.toString() === productId,
@@ -44,10 +62,11 @@ const addToCart = async (req, res) => {
         cart.cartItems.push({ productId, quantity, price: product.price });
       }
       await cart.save();
-      res.status(200).json(cart);
+      return res.status(200).json(cart);
     }
   } catch (error) {
-    res.status(500).json({ message: "Internal Server Error" });
+    console.error("Add to cart error:", error); // Log full error
+    res.status(500).json({ message: error.message }); // Send actual error message
   }
 };
 
@@ -91,8 +110,8 @@ const updateCart = async (req, res) => {
       return res.status(404).json({ message: "Cart not found" });
     }
 
-   const { productId } = req.params;
-const { quantity } = req.body;
+    const { productId } = req.params;
+    const { quantity } = req.body;
     const cartItem = cart.cartItems.find(
       (item) => item.productId.toString() === productId,
     );

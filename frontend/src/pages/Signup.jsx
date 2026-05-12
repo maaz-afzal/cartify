@@ -1,6 +1,8 @@
 import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import authService from "../services/authService";
+import { AuthContext } from "../context/AuthContext";
+import { useContext } from "react";
 
 const InputField = ({ label, type, placeholder, id, value, onChange }) => {
   return (
@@ -25,6 +27,7 @@ const InputField = ({ label, type, placeholder, id, value, onChange }) => {
 
 const Signup = () => {
   const navigate = useNavigate();
+  const { signup } = useContext(AuthContext);
   const [formData, setFormData] = useState({
     name: "",
     email: "",
@@ -44,8 +47,11 @@ const Signup = () => {
     e.preventDefault();
     try {
       const response = await authService.signup(formData);
-      console.log("Signup successful:", response);
-      navigate("/login");
+      if (response.token) {
+        const userData = response.user || { email: formData.email };
+        signup(userData, response.token);
+      }
+      navigate("/");
     } catch (error) {
       console.log("Signup failed:", error);
     }
