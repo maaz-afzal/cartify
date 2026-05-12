@@ -51,10 +51,16 @@ const Navbar = ({ searchTerm, setSearchTerm }) => {
               Home
             </Link>
             <Link
-              to="/products"
+              to="/about"
               className="text-gray-700 dark:text-gray-300 hover:text-amber-600 dark:hover:text-amber-500 transition"
             >
-              Products
+              About
+            </Link>
+            <Link
+              to="/contact"
+              className="text-gray-700 dark:text-gray-300 hover:text-amber-600 dark:hover:text-amber-500 transition"
+            >
+              Contact Us
             </Link>
 
             {/* Search Bar */}

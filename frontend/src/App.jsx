@@ -7,6 +7,8 @@ import Signup from "./pages/Signup.jsx";
 import Cart from "./pages/Cart.jsx";
 import ProductDetail from "./pages/ProductDetail.jsx";
 import NotFound from "./pages/NotFound.jsx";
+import About from "./pages/AboutUs.jsx";
+import ContactUs from "./pages/ContactUs.jsx";
 
 const App = () => {
   const [searchTerm, setSearchTerm] = useState("");
@@ -20,6 +22,8 @@ const App = () => {
             <Home searchTerm={searchTerm} setSearchTerm={setSearchTerm} />
           }
         />
+        <Route path="/about" element={<About />} />
+        <Route path="/contact" element={<ContactUs />} />
         <Route path="/login" element={<Login />} />
         <Route path="/signup" element={<Signup />} />
         <Route path="/cart" element={<Cart />} />
