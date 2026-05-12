@@ -185,11 +185,19 @@ const Navbar = ({ searchTerm, setSearchTerm }) => {
             </Link>
 
             <Link
-              to="/products"
+              to="/about"
               onClick={() => setMobileMenuOpen(false)}
               className="text-gray-700 dark:text-gray-300 py-2 hover:text-amber-600 dark:hover:text-amber-500 transition"
             >
-              Products
+              About
+            </Link>
+
+            <Link
+              to="/contact"
+              onClick={() => setMobileMenuOpen(false)}
+              className="text-gray-700 dark:text-gray-300 py-2 hover:text-amber-600 dark:hover:text-amber-500 transition"
+            >
+              Contact
             </Link>
 
             {!isLoggedin ? (
