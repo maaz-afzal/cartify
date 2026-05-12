@@ -3,7 +3,7 @@ import { Link } from "react-router-dom";
 import { CartContext } from "../context/CartContext";
 import { AuthContext } from "../context/AuthContext";
 import Navbar from "../components/Navbar";
-import { Trash2, Plus, Minus, ShoppingBag } from "lucide-react";
+import { Trash2, Plus, Minus, ShoppingBag, Tag, X } from "lucide-react";
 import productService from "../services/productService";
 import ToastNotification from "../components/ToastNotification";
 
@@ -14,6 +14,75 @@ const Cart = () => {
   const [loading, setLoading] = useState(true);
   const [productsMap, setProductsMap] = useState({});
   const [toast, setToast] = useState("");
+  const [discountCode, setDiscountCode] = useState("");
+  const [discountPercent, setDiscountPercent] = useState(0);
+  const [discountAmount, setDiscountAmount] = useState(0);
+  const [appliedDiscount, setAppliedDiscount] = useState(null);
+  const [discountError, setDiscountError] = useState("");
+  const [savedDiscounts, setSavedDiscounts] = useState([
+    { code: "SAVE10", percent: 10, description: "10% off on entire order" },
+    { code: "SAVE20", percent: 20, description: "20% off on orders over $100" },
+    {
+      code: "WELCOME15",
+      percent: 15,
+      description: "15% off for new customers",
+    },
+    {
+      code: "FREESHIP",
+      percent: 0,
+      description: "Free shipping",
+      isFreeShipping: true,
+    },
+  ]);
+
+  const handleDiscountChange = (e) => {
+    setDiscountCode(e.target.value.toUpperCase());
+    setDiscountError("");
+  };
+
+  const applyDiscount = () => {
+    if (!discountCode.trim()) {
+      setDiscountError("Please enter a discount code");
+      return;
+    }
+
+    const discount = savedDiscounts.find((d) => d.code === discountCode);
+
+    if (!discount) {
+      setDiscountError("Invalid discount code");
+      return;
+    }
+
+    const subtotal = calculateSubtotal();
+
+    if (discount.code === "SAVE20" && subtotal < 100) {
+      setDiscountError("SAVE20 requires minimum order of $100");
+      return;
+    }
+
+    // Apply discount
+    setAppliedDiscount(discount);
+
+    if (discount.isFreeShipping) {
+      setDiscountPercent(0);
+      setDiscountAmount(0);
+    } else {
+      setDiscountPercent(discount.percent);
+      const amount = (subtotal * discount.percent) / 100;
+      setDiscountAmount(amount);
+    }
+
+    setToast(`${discount.code} applied successfully!`);
+    setDiscountError("");
+  };
+
+  const removeDiscount = () => {
+    setAppliedDiscount(null);
+    setDiscountPercent(0);
+    setDiscountAmount(0);
+    setDiscountCode("");
+    setToast("Discount removed");
+  };
 
   useEffect(() => {
     const fetchCart = async () => {
@@ -49,11 +118,19 @@ const Cart = () => {
   const handleQuantityChange = async (itemId, newQuantity) => {
     if (newQuantity < 1) return;
     await updateCart(itemId, { quantity: newQuantity });
+    // Remove discount when cart changes
+    if (appliedDiscount) {
+      removeDiscount();
+    }
     setToast("Cart updated successfully!");
   };
 
   const handleRemoveItem = async (itemId) => {
     await removeFromCart(itemId);
+    // Remove discount when cart changes
+    if (appliedDiscount) {
+      removeDiscount();
+    }
     setToast("Item removed from cart.");
   };
 
@@ -69,11 +146,25 @@ const Cart = () => {
   };
 
   const calculateShipping = () => {
-    return calculateSubtotal() > 50 ? 0 : 5;
+    const subtotal = calculateSubtotal();
+    // Free shipping if applied discount has free shipping OR subtotal > 50
+    if (appliedDiscount?.isFreeShipping || subtotal > 50) {
+      return 0;
+    }
+    return 5;
+  };
+
+  const calculateDiscountAmount = () => {
+    const subtotal = calculateSubtotal();
+    if (appliedDiscount?.isFreeShipping) return 0;
+    return (subtotal * discountPercent) / 100;
   };
 
   const calculateTotal = () => {
-    return calculateSubtotal() + calculateShipping();
+    const subtotal = calculateSubtotal();
+    const discount = calculateDiscountAmount();
+    const shipping = calculateShipping();
+    return subtotal - discount + shipping;
   };
 
   if (!isLoggedin) {
@@ -141,6 +232,11 @@ const Cart = () => {
       </div>
     );
   }
+
+  const subtotal = calculateSubtotal();
+  const discount = calculateDiscountAmount();
+  const shipping = calculateShipping();
+  const total = calculateTotal();
 
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-950 transition-colors duration-300">
@@ -261,7 +357,81 @@ const Cart = () => {
           </div>
 
           <div className="lg:w-96">
+            {/* Discount Section */}
             <div className="bg-white dark:bg-gray-900 rounded-lg shadow-md p-6 transition-colors duration-300">
+              <div className="flex items-center gap-2 mb-4">
+                <Tag size={18} className="text-amber-500" />
+                <h2 className="text-lg font-semibold text-gray-800 dark:text-white">
+                  Apply Discount
+                </h2>
+              </div>
+
+              {appliedDiscount ? (
+                <div className="bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 rounded-lg p-3 mb-3">
+                  <div className="flex justify-between items-center">
+                    <div>
+                      <span className="text-green-700 dark:text-green-400 font-semibold">
+                        {appliedDiscount.code}
+                      </span>
+                      <p className="text-xs text-green-600 dark:text-green-500 mt-1">
+                        {appliedDiscount.description}
+                      </p>
+                    </div>
+                    <button
+                      onClick={removeDiscount}
+                      className="text-gray-500 hover:text-red-500 transition"
+                    >
+                      <X size={18} />
+                    </button>
+                  </div>
+                </div>
+              ) : (
+                <>
+                  <div className="flex gap-3">
+                    <input
+                      type="text"
+                      value={discountCode}
+                      onChange={handleDiscountChange}
+                      placeholder="Enter coupon code"
+                      className="flex-1 border dark:border-gray-700 dark:bg-gray-800 dark:text-white p-2 rounded-lg outline-none focus:ring-2 focus:ring-amber-500 transition"
+                    />
+                    <button
+                      onClick={applyDiscount}
+                      className="bg-amber-500 hover:bg-amber-600 text-white px-5 py-2 rounded-lg font-medium transition"
+                    >
+                      Apply
+                    </button>
+                  </div>
+                  {discountError && (
+                    <p className="text-red-500 text-sm mt-2">{discountError}</p>
+                  )}
+
+                  {/* Available Discounts */}
+                  <div className="mt-4 pt-3 border-t border-gray-200 dark:border-gray-800">
+                    <p className="text-xs text-gray-500 dark:text-gray-400 mb-2">
+                      Available offers:
+                    </p>
+                    <div className="flex flex-wrap gap-2">
+                      {savedDiscounts.map((disc) => (
+                        <button
+                          key={disc.code}
+                          onClick={() => {
+                            setDiscountCode(disc.code);
+                            applyDiscount();
+                          }}
+                          className="text-xs bg-gray-100 dark:bg-gray-800 hover:bg-amber-100 dark:hover:bg-amber-900/30 text-gray-600 dark:text-gray-400 px-2 py-1 rounded transition"
+                        >
+                          {disc.code}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                </>
+              )}
+            </div>
+
+            {/* Order Summary */}
+            <div className="bg-white dark:bg-gray-900 rounded-lg shadow-md p-6 transition-colors duration-300 mt-5">
               <h2 className="text-lg font-semibold text-gray-800 dark:text-white mb-4">
                 Order Summary
               </h2>
@@ -269,26 +439,45 @@ const Cart = () => {
               <div className="space-y-2 border-b border-gray-200 dark:border-gray-800 pb-4">
                 <div className="flex justify-between text-gray-600 dark:text-gray-400">
                   <span>Subtotal</span>
-                  <span>${calculateSubtotal().toFixed(2)}</span>
+                  <span>${subtotal.toFixed(2)}</span>
                 </div>
+
+                {discount > 0 && (
+                  <div className="flex justify-between text-green-600 dark:text-green-400">
+                    <span>Discount ({discountPercent}% off)</span>
+                    <span>-${discount.toFixed(2)}</span>
+                  </div>
+                )}
+
                 <div className="flex justify-between text-gray-600 dark:text-gray-400">
                   <span>Shipping</span>
                   <span>
-                    {calculateShipping() === 0
-                      ? "Free"
-                      : `$${calculateShipping()}`}
+                    {shipping === 0 ? "Free" : `$${shipping.toFixed(2)}`}
                   </span>
                 </div>
               </div>
 
-              <div className="flex justify-between mt-4 pb-4 border-b border-gray-200 dark:border-gray-800">
-                <span className="font-semibold text-gray-800 dark:text-white">
+              <div className="flex justify-between mt-4 pt-2">
+                <span className="font-semibold text-gray-800 dark:text-white text-lg">
                   Total
                 </span>
-                <span className="font-bold text-xl text-gray-800 dark:text-white">
-                  ${calculateTotal().toFixed(2)}
+                <span className="font-bold text-2xl text-gray-800 dark:text-white">
+                  ${total.toFixed(2)}
                 </span>
               </div>
+
+              {appliedDiscount?.code === "SAVE20" && subtotal < 100 && (
+                <p className="text-xs text-red-500 mt-2">
+                  Add ${(100 - subtotal).toFixed(2)} more to qualify for SAVE20
+                  discount
+                </p>
+              )}
+
+              {subtotal > 50 && !appliedDiscount?.isFreeShipping && (
+                <p className="text-xs text-green-600 dark:text-green-400 mt-2 text-center">
+                  ✨ You've qualified for free shipping!
+                </p>
+              )}
 
               <button className="w-full mt-6 bg-amber-500 hover:bg-amber-600 text-white py-3 rounded-lg font-medium transition">
                 Proceed to Checkout
