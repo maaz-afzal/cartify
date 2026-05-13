@@ -8,7 +8,12 @@ const cors = require("cors");
 const app = express();
 
 app.use(express.json());
-app.use(cors());
+app.use(
+  cors({
+    origin: "https://your-frontend-url.com",
+    credentials: true,
+  }),
+);
 
 app.use("/api/auth", authRoute);
 app.use("/api/products", productRoute);
