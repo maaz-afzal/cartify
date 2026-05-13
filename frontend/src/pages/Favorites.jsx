@@ -2,7 +2,6 @@ import React, { useContext, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { FavoriteContext } from "../context/FavoriteContext";
 import { AuthContext } from "../context/AuthContext";
-import Navbar from "../components/Navbar";
 import { Heart, ShoppingBag, Trash2 } from "lucide-react";
 import ToastNotification from "../components/ToastNotification";
 
@@ -32,7 +31,6 @@ const Favorites = () => {
   if (!isLoggedin) {
     return (
       <div className="min-h-screen bg-gray-50 dark:bg-gray-950">
-        <Navbar />
         <div className="max-w-7xl mx-auto px-4 py-20 text-center">
           <Heart
             size={64}
@@ -58,7 +56,6 @@ const Favorites = () => {
   if (loading) {
     return (
       <div className="min-h-screen bg-gray-50 dark:bg-gray-950">
-        <Navbar />
         <div className="text-center py-20 text-gray-500 dark:text-gray-400">
           Loading your favorites...
         </div>
@@ -69,7 +66,6 @@ const Favorites = () => {
   if (favorites.length === 0) {
     return (
       <div className="min-h-screen bg-gray-50 dark:bg-gray-950">
-        <Navbar />
         <div className="max-w-7xl mx-auto px-4 py-20 text-center">
           <Heart
             size={64}
@@ -98,9 +94,6 @@ const Favorites = () => {
         <ToastNotification message={toast} onClose={() => setToast("")} />
       )}
 
-      {/* displaying navbar component */}
-      <Navbar />
-
       <div className="max-w-7xl mx-auto px-4 py-8">
         <h1 className="text-2xl font-bold text-gray-800 dark:text-white mb-6 flex items-center gap-2">
           <Heart className="text-amber-500" size={28} />
@@ -108,10 +101,8 @@ const Favorites = () => {
         </h1>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-
           {/* displying favorite items */}
           {favorites.map((item) => {
-
             const product =
               typeof item.productId === "object" ? item.productId : null;
 

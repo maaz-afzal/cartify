@@ -1,14 +1,9 @@
 import React from "react";
-import Navbar from "../components/Navbar";
 import { ShieldCheck, Truck, CreditCard, Sparkles } from "lucide-react";
 
 const AboutUs = () => {
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-950">
-      
-      {/* navbar component */}
-      <Navbar />
-
       {/* about header */}
       <div className="max-w-5xl mx-auto px-4 py-10">
         <div className="text-center mb-10">
@@ -54,7 +49,6 @@ const AboutUs = () => {
         </div>
 
         <div className="grid md:grid-cols-3 gap-6">
-
           {/* about cards */}
           <div className="bg-white dark:bg-gray-900 p-6 rounded-xl shadow text-center">
             <ShieldCheck className="mx-auto text-orange-500 mb-2" />

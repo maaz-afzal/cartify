@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from "react";
-import Navbar from "../components/Navbar";
 import productService from "../services/productService";
 import ProductCard from "../components/ProductCard";
 import Hero from "../components/Hero";
@@ -89,7 +88,6 @@ const Home = ({ searchTerm, setSearchTerm }) => {
 
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-950 transition-colors duration-300">
-      <Navbar searchTerm={searchTerm} setSearchTerm={setSearchTerm} />
       <Hero />
 
       {searchTerm && (
@@ -104,7 +102,6 @@ const Home = ({ searchTerm, setSearchTerm }) => {
       {/* Filter Section */}
       <div className="bg-white dark:bg-gray-900 border-y border-gray-200 dark:border-gray-800 max-w-7xl mx-auto rounded-2xl shadow-sm transition-colors duration-300 mt-5">
         <div className="max-w-7xl mx-auto px-4 py-4 flex flex-wrap items-center justify-center gap-6">
-
           {/* Category Dropdown */}
           <div className="flex items-center gap-2">
             <span className="text-sm font-medium text-gray-500 dark:text-gray-400">
