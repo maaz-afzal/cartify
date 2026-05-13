@@ -173,6 +173,67 @@ const Cart = () => {
     return subtotal - discount + shipping;
   };
 
+  // Add this function after your calculateTotal function
+  const handleDownloadBill = () => {
+    if (cartItems.length === 0) {
+      setToast("Cart is empty! Add items to download bill.");
+      return;
+    }
+
+    // CSV headers
+    const headers = ["Product Name", "Price", "Quantity", "Total"];
+
+    // CSV rows
+    const rows = cartItems.map((item) => {
+      const product = getProduct(item.productId);
+      const total = item.price * item.quantity;
+      return [
+        `"${product.name || "Product"}"`,
+        `$${item.price}`,
+        item.quantity,
+        `$${total.toFixed(2)}`,
+      ];
+    });
+
+    // Bill summary rows
+    const subtotal = calculateSubtotal();
+    const discount = discountAmount;
+    const shipping = calculateShipping();
+    const total = calculateTotal();
+
+    const summaryRows = [
+      [],
+      ["SUBTOTAL", "", `$${subtotal.toFixed(2)}`],
+      ["DISCOUNT", discount > 0 ? `-$${discount.toFixed(2)}` : "$0", ""],
+      ["SHIPPING", shipping === 0 ? "FREE" : `$${shipping}`, ""],
+      ["TOTAL", "", `$${total.toFixed(2)}`],
+    ];
+
+    // Combine all data
+    const csvData = [headers, ...rows, ...summaryRows];
+
+    // Convert to CSV
+    const csvContent = csvData.map((row) => row.join(",")).join("\n");
+    const finalCsv = `${csvContent}\n\n"Order Date: ${new Date().toLocaleString()}"\n"Thank you for shopping with Cartify!"`;
+
+    // Create link
+    const blob = new Blob([finalCsv], { type: "text/csv;charset=utf-8;" });
+    const link = document.createElement("a");
+    const url = URL.createObjectURL(blob);
+
+    link.href = url;
+    link.setAttribute(
+      "download",
+      `CartifyBill_${new Date().toISOString().slice(0, 19).replace(/:/g, "-")}.csv`,
+    );
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    URL.revokeObjectURL(url);
+
+    setToast("Bill downloaded successfully!");
+  };
+
   // check for the user authentication
   if (!isLoggedin) {
     return (
@@ -439,6 +500,28 @@ const Cart = () => {
                   </div>
                 </>
               )}
+            </div>
+
+            <div className="mt-4">
+              <button
+                onClick={handleDownloadBill}
+                className="w-full bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-300 py-2 rounded-lg font-medium transition flex items-center justify-center gap-2"
+              >
+                <svg
+                  className="w-4 h-4"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"
+                  />
+                </svg>
+                Download Bill (CSV)
+              </button>
             </div>
 
             {/* order summary */}
