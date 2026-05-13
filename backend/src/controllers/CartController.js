@@ -26,16 +26,8 @@ const getCart = async (req, res) => {
 // Add items to cart
 const addToCart = async (req, res) => {
   try {
-    console.log("Request user:", req.user); // Debug log
     const userId = req.user.userId;
-    console.log("Extracted userId:", userId);
-
-    if (!userId) {
-      return res.status(401).json({ message: "User ID not found in token" });
-    }
-
     const { productId, quantity } = req.body;
-    console.log("Product ID:", productId, "Quantity:", quantity);
 
     const product = await Product.findById(productId);
     if (!product) {
@@ -45,7 +37,6 @@ const addToCart = async (req, res) => {
     let cart = await Cart.findOne({ userId });
 
     if (!cart) {
-      // Create new cart if doesn't exist
       cart = new Cart({
         userId,
         cartItems: [{ productId, quantity, price: product.price }],
@@ -65,8 +56,7 @@ const addToCart = async (req, res) => {
       return res.status(200).json(cart);
     }
   } catch (error) {
-    console.error("Add to cart error:", error); // Log full error
-    res.status(500).json({ message: error.message }); // Send actual error message
+    res.status(500).json({ message: error.message });
   }
 };
 

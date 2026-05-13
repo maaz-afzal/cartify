@@ -1,4 +1,4 @@
-require("dotenv").config();)
+require("dotenv").config();
 const express = require("express");
 const authRoute = require("./routes/authRoutes");
 const authMiddleware = require("./middlewares/authMiddleware");
@@ -8,11 +8,13 @@ const favoriteRoutes = require("./routes/favoriteRoutes");
 const cors = require("cors");
 const app = express();
 
+const FRONTEND_URL = process.env.FRONTEND_URL;
 
+app.use(cors());
 app.use(express.json());
 app.use(
   cors({
-    origin: "process.env.FRONTEND_URL || http://localhost:5173",
+    origin: FRONTEND_URL,
     credentials: true,
   }),
 );
@@ -20,6 +22,6 @@ app.use(
 app.use("/api/auth", authRoute);
 app.use("/api/products", productRoute);
 app.use("/api/cart", authMiddleware, cartRoute);
-app.use("/api/favorites", favoriteRoutes);
+app.use("/api/favorites", authMiddleware, favoriteRoutes);
 
 module.exports = app;

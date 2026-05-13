@@ -7,7 +7,7 @@ const Cart = require("../models/Cart");
 const validateMiddleware = (req, res, next) => {
   const errors = validationResult(req);
   if (!errors.isEmpty()) {
-    return res.status(400).json({ errors: errors.array() });
+    return res.status(400).json({ validationErrors: errors.array() });
   }
   next();
 };
@@ -36,7 +36,7 @@ const authSignUp = [
       if (role !== "user") {
         return res
           .status(400)
-          .json({ message: "Only user role allowed in signup" });
+          .json({ message: "Only user is allowed to sigup" });
       }
 
       const existingUser = await User.findOne({ email });
@@ -62,7 +62,6 @@ const authSignUp = [
 
       res.status(201).json({
         message: "User Successfully Signup",
-        id: user._id,
         token,
         user,
       });
@@ -79,7 +78,7 @@ const validateLogin = [
     .trim()
     .isLength({ min: 6 })
     .notEmpty()
-    .withMessage("Password must be at least 6 characters"),
+    .withMessage("Password are required and must be 6 characters"),
 ];
 
 // Login Authentication
@@ -97,7 +96,7 @@ const authLogin = [
 
       const isMatch = await bcrypt.compare(password, user.password);
       if (!isMatch) {
-        return res.status(400).json({ message: "Invalid credentials" });
+        return res.status(400).json({ message: "Invalid Password" });
       }
 
       const token = jwt.sign({ userId: user._id }, process.env.JWT_SECRET, {
