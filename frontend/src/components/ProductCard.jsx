@@ -1,11 +1,12 @@
 import React, { useContext, useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { CartContext } from "../context/CartContext";
 import { FavoriteContext } from "../context/FavoriteContext";
 import { Eye, Heart } from "lucide-react";
 import ToastNotification from "./ToastNotification";
 
 const ProductCard = ({ product }) => {
+  const navigate = useNavigate();
   const { addToCart } = useContext(CartContext);
   const { addToFavorites, removeFromFavorites, isFavorite } =
     useContext(FavoriteContext);
@@ -30,6 +31,12 @@ const ProductCard = ({ product }) => {
       await addToFavorites(product._id);
       setToast("Added to favorites");
     }
+  };
+
+  const handleViewProduct = (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    navigate(`/product/${product._id}`);
   };
 
   const name = product?.name || "Beauty Product";
@@ -113,14 +120,13 @@ const ProductCard = ({ product }) => {
               >
                 Add to Cart
               </button>
-              <Link
-                to={`/product/${product._id}`}
-                onClick={(e) => e.stopPropagation()}
-                className="p-2 rounded-lg border border-gray-300 dark:border-gray-700 hover:bg-gray-100 dark:hover:bg-gray-800 transition"
+              <button
+                onClick={handleViewProduct}
+                className="p-2 rounded-lg border border-gray-300 dark:border-gray-700 hover:bg-gray-100 dark:hover:bg-gray-800 transition cursor-pointer"
                 aria-label="View product"
               >
                 <Eye size={18} className="text-gray-600 dark:text-gray-400" />
-              </Link>
+              </button>
             </div>
           </div>
         </div>
