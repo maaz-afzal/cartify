@@ -1,11 +1,11 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useMemo } from "react";
 import productService from "../services/productService";
 import ProductCard from "../components/ProductCard";
 import Hero from "../components/Hero";
 
-const Home = ({ searchTerm, setSearchTerm }) => {
+const Home = () => {
   const [allProducts, setAllProducts] = useState([]);
-  const [filteredProducts, setFilteredProducts] = useState([]);
+  const [searchTerm, setSearchTerm] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("All");
   const [selectedBrand, setSelectedBrand] = useState("All");
   const [sortOrder, setSortOrder] = useState("default");
@@ -14,24 +14,21 @@ const Home = ({ searchTerm, setSearchTerm }) => {
     productService
       .getProducts()
       .then((data) => {
-        setAllProducts(data);
-        setFilteredProducts(data);
+        const items = data.products || data;
+        setAllProducts(items);
       })
-      .catch((error) => console.error("Error loading products:", error));
+      .catch((err) => console.error("Error loading products:", err));
   }, []);
 
-  useEffect(() => {
+  const filteredProducts = useMemo(() => {
     let result = [...allProducts];
 
-    // Category filter
     if (selectedCategory !== "All") {
       result = result.filter(
-        (p) =>
-          p.category === selectedCategory || p.tags?.includes(selectedCategory),
+        (p) => p.category === selectedCategory || p.tags?.includes(selectedCategory)
       );
     }
 
-    // Brand Filter
     if (selectedBrand !== "All") {
       if (selectedBrand === "No Brand") {
         result = result.filter((p) => !p.brand);
@@ -40,38 +37,33 @@ const Home = ({ searchTerm, setSearchTerm }) => {
       }
     }
 
-    // Search Filter
-    if (searchTerm && searchTerm.trim() !== "") {
-      const searchLower = searchTerm.toLowerCase();
-      result = result.filter((product) => {
-        return (
-          product.name?.toLowerCase().includes(searchLower) ||
-          product.category?.toLowerCase().includes(searchLower) ||
-          product.brand?.toLowerCase().includes(searchLower) ||
-          product.description?.toLowerCase().includes(searchLower) ||
-          product.tags?.some((tag) => tag.toLowerCase().includes(searchLower))
-        );
-      });
+    if (searchTerm.trim()) {
+      const lower = searchTerm.toLowerCase();
+      result = result.filter(
+        (p) =>
+          p.name?.toLowerCase().includes(lower) ||
+          p.category?.toLowerCase().includes(lower) ||
+          p.brand?.toLowerCase().includes(lower) ||
+          p.description?.toLowerCase().includes(lower) ||
+          p.tags?.some((t) => t.toLowerCase().includes(lower))
+      );
     }
 
-    // Sorting products
     if (sortOrder === "az") {
       result.sort((a, b) => (a.name || "").localeCompare(b.name || ""));
     } else if (sortOrder === "za") {
       result.sort((a, b) => (b.name || "").localeCompare(a.name || ""));
     }
 
-    setFilteredProducts(result);
-  }, [selectedCategory, selectedBrand, sortOrder, allProducts, searchTerm]);
+    return result;
+  }, [allProducts, selectedCategory, selectedBrand, searchTerm, sortOrder]);
 
-  const uniqueCategories = [
+  const uniqueCategories = useMemo(() => [
     "All",
-    ...new Set(
-      allProducts.map((p) => p.category || p.tags?.[0]).filter(Boolean),
-    ),
-  ];
+    ...new Set(allProducts.map((p) => p.category || p.tags?.[0]).filter(Boolean)),
+  ], [allProducts]);
 
-  const uniqueBrands = [
+  const uniqueBrands = useMemo(() => [
     "All",
     "No Brand",
     ...new Set(
@@ -80,74 +72,42 @@ const Home = ({ searchTerm, setSearchTerm }) => {
         .filter((b) => {
           if (!b) return false;
           const num = parseInt(b.replace(/\D/g, ""));
-          const isBrandStr = b.toLowerCase().includes("brand");
-          return !(isBrandStr && num >= 16 && num <= 30);
-        }),
+          return !(b.toLowerCase().includes("brand") && num >= 16 && num <= 30);
+        })
     ),
-  ];
+  ], [allProducts]);
+
+  const selectClass =
+    "bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-700 text-gray-700 dark:text-gray-300 text-sm rounded-lg focus:ring-amber-500 focus:border-amber-500 block p-2 transition-colors outline-none cursor-pointer";
 
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-950 transition-colors duration-300">
-      <Hero />
+      <Hero searchTerm={searchTerm} setSearchTerm={setSearchTerm} />
 
       {searchTerm && (
-        <div className="max-w-7xl mx-auto px-4 mt-4">
-          <div className="text-center text-sm text-gray-600 dark:text-gray-400">
-            Found {filteredProducts.length} results for "
-            <span className="font-semibold">{searchTerm}</span>"
-          </div>
+        <div className="max-w-7xl mx-auto px-4 mt-4 text-center text-sm text-gray-600 dark:text-gray-400">
+          Found {filteredProducts.length} results for "
+          <span className="font-semibold">{searchTerm}</span>"
         </div>
       )}
 
-      {/* Filter Section */}
       <div className="bg-white dark:bg-gray-900 border-y border-gray-200 dark:border-gray-800 max-w-7xl mx-auto rounded-2xl shadow-sm transition-colors duration-300 mt-5">
         <div className="max-w-7xl mx-auto px-4 py-4 flex flex-wrap items-center justify-center gap-6">
-          {/* Category Dropdown */}
           <div className="flex items-center gap-2">
-            <span className="text-sm font-medium text-gray-500 dark:text-gray-400">
-              Category:
-            </span>
-            <select
-              value={selectedCategory}
-              onChange={(e) => setSelectedCategory(e.target.value)}
-              className="bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-700 text-gray-700 dark:text-gray-300 text-sm rounded-lg focus:ring-amber-500 focus:border-amber-500 block p-2 transition-colors outline-none cursor-pointer"
-            >
-              {uniqueCategories.map((cat) => (
-                <option key={cat} value={cat}>
-                  {cat}
-                </option>
-              ))}
+            <span className="text-sm font-medium text-gray-500 dark:text-gray-400">Category:</span>
+            <select value={selectedCategory} onChange={(e) => setSelectedCategory(e.target.value)} className={selectClass}>
+              {uniqueCategories.map((cat) => <option key={cat} value={cat}>{cat}</option>)}
             </select>
           </div>
-
-          {/* Brand Dropdown */}
           <div className="flex items-center gap-2">
-            <span className="text-sm font-medium text-gray-500 dark:text-gray-400">
-              Brand:
-            </span>
-            <select
-              value={selectedBrand}
-              onChange={(e) => setSelectedBrand(e.target.value)}
-              className="bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-700 text-gray-700 dark:text-gray-300 text-sm rounded-lg focus:ring-amber-500 focus:border-amber-500 block p-2 transition-colors outline-none cursor-pointer"
-            >
-              {uniqueBrands.map((b) => (
-                <option key={b} value={b}>
-                  {b}
-                </option>
-              ))}
+            <span className="text-sm font-medium text-gray-500 dark:text-gray-400">Brand:</span>
+            <select value={selectedBrand} onChange={(e) => setSelectedBrand(e.target.value)} className={selectClass}>
+              {uniqueBrands.map((b) => <option key={b} value={b}>{b}</option>)}
             </select>
           </div>
-
-          {/* Sort Dropdown */}
           <div className="flex items-center gap-2">
-            <span className="text-sm font-medium text-gray-500 dark:text-gray-400">
-              Sort By:
-            </span>
-            <select
-              value={sortOrder}
-              onChange={(e) => setSortOrder(e.target.value)}
-              className="bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-700 text-gray-700 dark:text-gray-300 text-sm rounded-lg focus:ring-amber-500 focus:border-amber-500 block p-2 transition-colors outline-none cursor-pointer"
-            >
+            <span className="text-sm font-medium text-gray-500 dark:text-gray-400">Sort By:</span>
+            <select value={sortOrder} onChange={(e) => setSortOrder(e.target.value)} className={selectClass}>
               <option value="default">Default</option>
               <option value="az">Name (A-Z)</option>
               <option value="za">Name (Z-A)</option>
@@ -156,24 +116,17 @@ const Home = ({ searchTerm, setSearchTerm }) => {
         </div>
       </div>
 
-      {/* products grid */}
       <div className="max-w-7xl mx-auto px-4 py-8">
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
           {filteredProducts.map((product) => (
             <ProductCard key={product._id} product={product} />
           ))}
         </div>
-
         {filteredProducts.length === 0 && (
           <div className="text-center py-20 text-gray-500 dark:text-gray-400 italic">
-            {searchTerm ? (
-              <>
-                No products found matching "
-                <span className="font-semibold">{searchTerm}</span>"
-              </>
-            ) : (
-              "No products found matching the filters."
-            )}
+            {searchTerm
+              ? <>No products found matching "<span className="font-semibold">{searchTerm}</span>"</>
+              : "No products found matching the filters."}
           </div>
         )}
       </div>

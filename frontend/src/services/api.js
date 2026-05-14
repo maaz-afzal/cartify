@@ -1,36 +1,29 @@
 import axios from "axios";
 
-const url = import.meta.env.VITE_API_URL || "http://localhost:3000";
-
-// create an axios instance
 const api = axios.create({
-  baseURL: url,
-  credentials: true,
+  baseURL: import.meta.env.VITE_API_URL || "http://localhost:3000",
+  withCredentials: true,
   headers: {
     "Content-Type": "application/json",
   },
 });
 
-// add a request interceptor
+// Request interceptor
 api.interceptors.request.use((config) => {
   const token = localStorage.getItem("token");
-
   if (token) {
     config.headers.Authorization = `Bearer ${token}`;
   }
-
   return config;
 });
 
-// add a response interceptor
+// Response interceptor
 api.interceptors.response.use(
-  (response) => {
-    return response;
-  },
-
+  (response) => response,
   (error) => {
-    if (error.response && error.response.status === 401) {
+    if (error.response?.status === 401) {
       localStorage.removeItem("token");
+      localStorage.removeItem("user");
       window.location.href = "/login";
     }
     return Promise.reject(error);
