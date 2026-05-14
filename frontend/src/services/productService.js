@@ -1,9 +1,9 @@
 import api from "./api";
 
 // Function to get products
-const getProducts = async () => {
+const getProducts = async (params) => {
   try {
-    const res = await api.get("/api/products");
+    const res = await api.get("/api/products", { params });
     return res.data;
   } catch (error) {
     console.log(error);
