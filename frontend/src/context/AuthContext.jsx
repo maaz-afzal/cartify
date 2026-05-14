@@ -1,9 +1,8 @@
-import React, { useEffect, useState } from "react";
-import { createContext } from "react";
+import React, { useEffect, useState, createContext } from "react";
 
 export const AuthContext = createContext();
 
-export const AuthProvider = ({ children }) => {
+const AuthProvider = ({ children }) => {
   const [isLoggedin, setIsLoggedin] = useState(false);
   const [user, setUser] = useState(null);
 
@@ -11,48 +10,23 @@ export const AuthProvider = ({ children }) => {
     const token = localStorage.getItem("token");
     const storedUser = localStorage.getItem("user");
 
-    if (
-      token &&
-      storedUser &&
-      storedUser !== "undefined" &&
-      storedUser !== "null"
-    ) {
+    if (token && storedUser && storedUser !== "undefined" && storedUser !== "null") {
       try {
-        const parsedUser = JSON.parse(storedUser);
         setIsLoggedin(true);
-        setUser(parsedUser);
-      } catch (error) {
-        console.log("Error parsing user:", error);
+        setUser(JSON.parse(storedUser));
+      } catch {
         localStorage.removeItem("user");
         localStorage.removeItem("token");
-        setIsLoggedin(false);
-        setUser(null);
       }
     } else {
       if (storedUser === "undefined" || storedUser === "null") {
         localStorage.removeItem("user");
       }
-      setIsLoggedin(false);
-      setUser(null);
     }
   }, []);
 
-  const login = (userData, token) => {
-    if (!userData || !token) {
-      console.log("Invalid login data");
-      return;
-    }
-    localStorage.setItem("token", token);
-    localStorage.setItem("user", JSON.stringify(userData));
-    setIsLoggedin(true);
-    setUser(userData);
-  };
-
-  const signup = (userData, token) => {
-    if (!userData || !token) {
-      console.log("Invalid login data");
-      return;
-    }
+  const saveAuth = (userData, token) => {
+    if (!userData || !token) return;
     localStorage.setItem("token", token);
     localStorage.setItem("user", JSON.stringify(userData));
     setIsLoggedin(true);
@@ -67,7 +41,7 @@ export const AuthProvider = ({ children }) => {
   };
 
   return (
-    <AuthContext.Provider value={{ isLoggedin, user, login, signup, logout }}>
+    <AuthContext.Provider value={{ isLoggedin, user, login: saveAuth, signup: saveAuth, logout }}>
       {children}
     </AuthContext.Provider>
   );

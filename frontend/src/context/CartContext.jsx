@@ -5,9 +5,9 @@ export const CartContext = createContext();
 
 const CartProvider = ({ children }) => {
   const [cartItems, setCartItems] = useState([]);
+
   useEffect(() => {
-    const token = localStorage.getItem("token");
-    if (token) {
+    if (localStorage.getItem("token")) {
       getCart();
     }
   }, []);
@@ -15,41 +15,41 @@ const CartProvider = ({ children }) => {
   const getCart = async () => {
     try {
       const data = await cartService.getCart();
-      setCartItems(data.cartItems);
-    } catch (error) {
-      console.error("Error fetching cart items:", error);
+      setCartItems(data.cartItems || []);
+    } catch {
       setCartItems([]);
     }
   };
 
   const addToCart = async (data) => {
-    const addCart = await cartService.addToCart(data);
-    setCartItems(addCart.cartItems);
+    try {
+      const res = await cartService.addToCart(data);
+      setCartItems(res.cartItems);
+    } catch (err) {
+      console.error("Add to cart failed:", err);
+    }
   };
+
   const removeFromCart = async (id) => {
-    const removeCart = await cartService.removeFromCart(id);
-    setCartItems(removeCart.cartItems);
+    try {
+      const res = await cartService.removeFromCart(id);
+      setCartItems(res.cartItems);
+    } catch (err) {
+      console.error("Remove from cart failed:", err);
+    }
   };
+
   const updateCart = async (id, data) => {
-    const cartUpdate = await cartService.updateCart(id, data);
-    setCartItems(cartUpdate.cartItems);
-  };
-  const clearCart = async () => {
-    const clear = await cartService.clearCart();
-    setCartItems(clear.cartItems);
+    try {
+      const res = await cartService.updateCart(id, data);
+      setCartItems(res.cartItems);
+    } catch (err) {
+      console.error("Update cart failed:", err);
+    }
   };
 
   return (
-    <CartContext.Provider
-      value={{
-        getCart,
-        addToCart,
-        updateCart,
-        removeFromCart,
-        clearCart,
-        cartItems,
-      }}
-    >
+    <CartContext.Provider value={{ cartItems, getCart, addToCart, updateCart, removeFromCart }}>
       {children}
     </CartContext.Provider>
   );
