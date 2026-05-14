@@ -1,13 +1,12 @@
 const Favorite = require("../models/Favorite");
 const Product = require("../models/Product");
 
-// Get the favorites
 const getFavorites = async (req, res) => {
   try {
     const userId = req.user.userId;
-    let favorite = await Favorite.findOne({ userId }).populate(
-      "products.productId",
-    );
+    const favorite = await Favorite.findOne({ userId })
+      .populate("products.productId")
+      .lean();
 
     if (!favorite) {
       return res.status(200).json({ products: [] });
@@ -20,13 +19,12 @@ const getFavorites = async (req, res) => {
   }
 };
 
-// adding products to favorites
 const addToFavorites = async (req, res) => {
   try {
     const userId = req.user.userId;
     const { productId } = req.body;
 
-    const product = await Product.findById(productId);
+    const product = await Product.findById(productId).lean();
     if (!product) {
       return res.status(404).json({ message: "Product not found" });
     }
@@ -34,11 +32,7 @@ const addToFavorites = async (req, res) => {
     let favorite = await Favorite.findOne({ userId });
 
     if (!favorite) {
-      favorite = new Favorite({
-        userId,
-        products: [{ productId }],
-      });
-      await favorite.save();
+      favorite = await Favorite.create({ userId, products: [{ productId }] });
       return res.status(201).json({ message: "Added to favorites", favorite });
     }
 
@@ -47,9 +41,7 @@ const addToFavorites = async (req, res) => {
     );
 
     if (alreadyExists) {
-      return res
-        .status(400)
-        .json({ message: "Product is already in favorites" });
+      return res.status(400).json({ message: "Product already in favorites" });
     }
 
     favorite.products.push({ productId });
@@ -62,14 +54,12 @@ const addToFavorites = async (req, res) => {
   }
 };
 
-// Remove from favorites
 const removeFromFavorites = async (req, res) => {
   try {
     const userId = req.user.userId;
     const { productId } = req.params;
 
     const favorite = await Favorite.findOne({ userId });
-
     if (!favorite) {
       return res.status(404).json({ message: "Favorites not found" });
     }
@@ -80,14 +70,11 @@ const removeFromFavorites = async (req, res) => {
 
     await favorite.save();
 
-    // CHANGE: Wapas save karte waqt populate karein taaki pura data mile
-    const updatedFavorite = await Favorite.findById(favorite._id).populate(
-      "products.productId",
-    );
+    await favorite.populate("products.productId");
 
     res.status(200).json({
       message: "Removed from favorites",
-      favorite: updatedFavorite, // Ab isme pura product data hoga
+      favorite,
     });
   } catch (error) {
     console.error(error);
@@ -95,8 +82,4 @@ const removeFromFavorites = async (req, res) => {
   }
 };
 
-module.exports = {
-  getFavorites,
-  addToFavorites,
-  removeFromFavorites,
-};
+module.exports = { getFavorites, addToFavorites, removeFromFavorites };
