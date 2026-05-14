@@ -2,12 +2,23 @@ const Product = require("../models/Product");
 
 const getProducts = async (req, res) => {
   try {
-    const productItems = await Product.find();
-    if (productItems.length === 0) {
-      return res.status(200).json([]);
-    } else {
-      res.status(200).json(productItems);
-    }
+    const page = parseInt(req.query.page) || 1;
+    const limit = parseInt(req.query.limit) || 20;
+    const skip = (page - 1) * limit;
+
+    const [products, total] = await Promise.all([
+      Product.find().skip(skip).limit(limit).lean(),
+      Product.countDocuments(),
+    ]);
+
+    res.status(200).json({
+      products,
+      pagination: {
+        total,
+        page,
+        pages: Math.ceil(total / limit),
+      },
+    });
   } catch (error) {
     res.status(500).json({ message: "Internal Server Error" });
   }
@@ -15,8 +26,7 @@ const getProducts = async (req, res) => {
 
 const getProductById = async (req, res) => {
   try {
-    const productId = req.params.id;
-    const product = await Product.findById(productId);
+    const product = await Product.findById(req.params.id).lean();
     if (!product) {
       return res.status(404).json({ message: "Product not found" });
     }
@@ -26,7 +36,4 @@ const getProductById = async (req, res) => {
   }
 };
 
-module.exports = {
-  getProducts,
-  getProductById,
-};
+module.exports = { getProducts, getProductById };
