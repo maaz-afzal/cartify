@@ -109,14 +109,6 @@ const Home = () => {
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-950 transition-colors duration-300">
       <Hero searchTerm={searchTerm} setSearchTerm={setSearchTerm} />
-
-      {searchTerm && (
-        <div className="max-w-7xl mx-auto px-4 mt-4 text-center text-sm text-gray-600 dark:text-gray-400">
-          Found {filteredProducts.length} results for "
-          <span className="font-semibold">{searchTerm}</span>"
-        </div>
-      )}
-
       <div className="bg-white dark:bg-gray-900 border-y border-gray-200 dark:border-gray-800 max-w-7xl mx-auto rounded-2xl shadow-sm transition-colors duration-300 mt-5">
         <div className="max-w-7xl mx-auto px-4 py-4 flex flex-wrap items-center justify-center gap-6">
           <div className="flex items-center gap-2">
