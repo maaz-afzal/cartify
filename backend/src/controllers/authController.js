@@ -42,7 +42,7 @@ const authSignUp = [
         role: "user",
       });
 
-      const token = jwt.sign({ userId: user._id }, process.env.JWT_SECRET, {
+      const token = jwt.sign({ userId: user._id, role: user.role}, process.env.JWT_SECRET, {
         expiresIn: "7d",
       });
 
@@ -87,7 +87,7 @@ const authLogin = [
         return res.status(400).json({ message: "Invalid Password" });
       }
 
-      const token = jwt.sign({ userId: user._id }, process.env.JWT_SECRET, {
+      const token = jwt.sign({ userId: user._id, role: user.role}, process.env.JWT_SECRET, {
         expiresIn: "7d",
       });
 

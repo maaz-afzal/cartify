@@ -13,14 +13,46 @@ import Favorites from "./pages/Favorites.jsx";
 import Checkout from "./pages/Checkout.jsx";
 import OrderSuccess from "./pages/OrderSuccess.jsx";
 
+import AdminLayout from "./components/AdminLayout";
+import AdminDashboard from "./pages/admin/Dashboard";
+import AdminProducts from "./pages/admin/Products";
+import AdminUsers from "./pages/admin/Users";
 
 const App = () => {
   return (
     <Routes>
-      <Route path="/" element={<Layout><Home /></Layout>} />
-      <Route path="/about" element={<Layout><AboutUs /></Layout>} />
-      <Route path="/contact" element={<Layout><ContactUs /></Layout>} />
-      <Route path="/favorites" element={<Layout><Favorites /></Layout>} />
+      <Route
+        path="/"
+        element={
+          <Layout>
+            <Home />
+          </Layout>
+        }
+      />
+      <Route
+        path="/about"
+        element={
+          <Layout>
+            <AboutUs />
+          </Layout>
+        }
+      />
+      <Route
+        path="/contact"
+        element={
+          <Layout>
+            <ContactUs />
+          </Layout>
+        }
+      />
+      <Route
+        path="/favorites"
+        element={
+          <Layout>
+            <Favorites />
+          </Layout>
+        }
+      />
       <Route path="/cart" element={<Cart />} />
       <Route path="/login" element={<Login />} />
       <Route path="/signup" element={<Signup />} />
@@ -28,6 +60,12 @@ const App = () => {
       <Route path="/checkout" element={<Checkout />} />
       <Route path="/order-success" element={<OrderSuccess />} />
       <Route path="*" element={<NotFound />} />
+
+      <Route path="/admin" element={<AdminLayout />}>
+        <Route index element={<AdminDashboard />} />
+        <Route path="products" element={<AdminProducts />} />
+        <Route path="users" element={<AdminUsers />} />
+      </Route>
     </Routes>
   );
 };
