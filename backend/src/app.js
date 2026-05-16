@@ -6,6 +6,7 @@ const authRoute = require("./routes/authRoutes");
 const productRoute = require("./routes/productRoutes");
 const cartRoute = require("./routes/cartRoutes");
 const favoriteRoutes = require("./routes/favoriteRoutes");
+const discountRoutes = require("./routes/discountRoutes");
 const authMiddleware = require("./middlewares/authMiddleware");
 
 const app = express();
@@ -22,6 +23,7 @@ app.use(express.json());
 app.use("/api/auth", authRoute);
 app.use("/api/products", productRoute);
 app.use("/api/cart", authMiddleware, cartRoute);
+app.use("/api/discount", authMiddleware, discountRoutes);
 app.use("/api/favorites", authMiddleware, favoriteRoutes);
 
 module.exports = app;

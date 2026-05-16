@@ -6,6 +6,7 @@ import Navbar from "../components/Navbar";
 import { Trash2, Plus, Minus, ShoppingBag, Tag, X } from "lucide-react";
 import productService from "../services/productService";
 import ToastNotification from "../components/ToastNotification";
+import discountService from "../services/discountService";
 
 const Cart = () => {
   const { cartItems, removeFromCart, updateCart, getCart } =
@@ -16,76 +17,72 @@ const Cart = () => {
   const [productsMap, setProductsMap] = useState({});
   const [toast, setToast] = useState("");
   const [discountCode, setDiscountCode] = useState("");
-  const [discountPercent, setDiscountPercent] = useState(0);
-  const [discountAmount, setDiscountAmount] = useState(0);
+  const [discountLoading, setDiscountLoading] = useState(false);
   const [appliedDiscount, setAppliedDiscount] = useState(null);
   const [discountError, setDiscountError] = useState("");
-  const [savedDiscounts, setSavedDiscounts] = useState([
-    { code: "SAVE10", percent: 10, description: "10% off on entire order" },
-    { code: "SAVE20", percent: 20, description: "20% off on orders over $100" },
-    {
-      code: "WELCOME15",
-      percent: 15,
-      description: "15% off for new customers",
-    },
-    {
-      code: "FREESHIP",
-      percent: 0,
-      description: "Free shipping",
-      isFreeShipping: true,
-    },
-  ]);
 
-  // discount handle function
-  const handleDiscountChange = (e) => {
-    setDiscountCode(e.target.value.toUpperCase());
-    setDiscountError("");
+  const handleDiscountButtonClick = (code) => {
+    setDiscountCode(code);
   };
 
-  // function to apply discout
-  const applyDiscount = () => {
+  const handleApplyDiscount = async () => {
     if (!discountCode.trim()) {
       setDiscountError("Please enter a discount code");
       return;
     }
 
-    const discount = savedDiscounts.find((d) => d.code === discountCode);
-
-    if (!discount) {
-      setDiscountError("Invalid discount code");
-      return;
-    }
-
-    const subtotal = calculateSubtotal();
-
-    if (discount.code === "SAVE20" && subtotal < 100) {
-      setDiscountError("SAVE20 requires minimum order of $100");
-      return;
-    }
-
-    setAppliedDiscount(discount);
-
-    if (discount.isFreeShipping) {
-      setDiscountPercent(0);
-      setDiscountAmount(0);
-    } else {
-      setDiscountPercent(discount.percent);
-      const amount = (subtotal * discount.percent) / 100;
-      setDiscountAmount(amount);
-    }
-
-    setToast(`${discount.code} applied successfully!`);
+    setDiscountLoading(true);
     setDiscountError("");
+
+    try {
+      const response = await discountService.applyDiscount(discountCode);
+
+      setAppliedDiscount({
+        code: response.code,
+        percent: response.percent,
+        discountAmount: response.discountAmount,
+      });
+
+      setToast(response.message);
+      setDiscountCode("");
+    } catch (error) {
+      setDiscountError(
+        error.response?.data?.message || "Failed to apply discount",
+      );
+    } finally {
+      setDiscountLoading(false);
+    }
   };
 
-  // function that remove discount
-  const removeDiscount = () => {
-    setAppliedDiscount(null);
-    setDiscountPercent(0);
-    setDiscountAmount(0);
-    setDiscountCode("");
-    setToast("Discount removed");
+  const handleRemoveDiscount = async () => {
+    try {
+      const response = await discountService.removeDiscount();
+      setAppliedDiscount(null);
+      setToast(response.message);
+    } catch (error) {
+      setToast(error.response?.data?.message || "Failed to remove discount");
+    }
   };
+
+  useEffect(() => {
+    const loadDiscountInfo = async () => {
+      if (isLoggedin) {
+        try {
+          const discountInfo = await discountService.getDiscountInfo();
+          if (discountInfo.hasDiscount) {
+            setAppliedDiscount({
+              code: discountInfo.discountCode,
+              percent: discountInfo.discountPercent,
+              discountAmount: discountInfo.discountAmount,
+            });
+          }
+        } catch (error) {
+          console.error("Failed to load discount info:", error);
+        }
+      }
+    };
+    loadDiscountInfo();
+  }, [isLoggedin]);
 
   useEffect(() => {
     const fetchCart = async () => {
@@ -118,21 +115,21 @@ const Cart = () => {
     fetchProductDetails();
   }, [cartItems]);
 
-  // function that handle quantity changing
   const handleQuantityChange = async (itemId, newQuantity) => {
     if (newQuantity < 1) return;
     await updateCart(itemId, { quantity: newQuantity });
+    // Remove discount when cart changes
     if (appliedDiscount) {
-      removeDiscount();
+      await handleRemoveDiscount();
     }
     setToast("Cart updated successfully!");
   };
 
-  // function that remove item from cart
   const handleRemoveItem = async (itemId) => {
     await removeFromCart(itemId);
+    // Remove discount when cart changes
     if (appliedDiscount) {
-      removeDiscount();
+      await handleRemoveDiscount();
     }
     setToast("Item removed from cart.");
   };
@@ -141,7 +138,6 @@ const Cart = () => {
     return productsMap[productId] || {};
   };
 
-  // function to calculate the subtotal
   const calculateSubtotal = () => {
     return cartItems.reduce(
       (total, item) => total + item.price * item.quantity,
@@ -149,23 +145,23 @@ const Cart = () => {
     );
   };
 
-  // funtion to calculate the shipping cost
   const calculateShipping = () => {
     const subtotal = calculateSubtotal();
-    if (appliedDiscount?.isFreeShipping || subtotal > 50) {
+    // Free shipping if FREESHIP discount applied OR subtotal > 50
+    if (appliedDiscount?.code === "FREESHIP" || subtotal > 50) {
       return 0;
     }
     return 5;
   };
 
-  // function to calculate discount amount
   const calculateDiscountAmount = () => {
-    const subtotal = calculateSubtotal();
-    if (appliedDiscount?.isFreeShipping) return 0;
-    return (subtotal * discountPercent) / 100;
+    // If FREESHIP discount, no percentage discount
+    if (appliedDiscount?.code === "FREESHIP") {
+      return 0;
+    }
+    return appliedDiscount?.discountAmount || 0;
   };
 
-  // function to calculate total
   const calculateTotal = () => {
     const subtotal = calculateSubtotal();
     const discount = calculateDiscountAmount();
@@ -173,17 +169,14 @@ const Cart = () => {
     return subtotal - discount + shipping;
   };
 
-  // Add this function after your calculateTotal function
   const handleDownloadBill = () => {
     if (cartItems.length === 0) {
       setToast("Cart is empty! Add items to download bill.");
       return;
     }
 
-    // CSV headers
     const headers = ["Product Name", "Price", "Quantity", "Total"];
 
-    // CSV rows
     const rows = cartItems.map((item) => {
       const product = getProduct(item.productId);
       const total = item.price * item.quantity;
@@ -195,28 +188,23 @@ const Cart = () => {
       ];
     });
 
-    // Bill summary rows
     const subtotal = calculateSubtotal();
-    const discount = discountAmount;
+    const discount = calculateDiscountAmount();
     const shipping = calculateShipping();
     const total = calculateTotal();
 
     const summaryRows = [
       [],
       ["SUBTOTAL", "", `$${subtotal.toFixed(2)}`],
-      ["DISCOUNT", discount > 0 ? `-$${discount.toFixed(2)}` : "$0", ""],
-      ["SHIPPING", shipping === 0 ? "FREE" : `$${shipping}`, ""],
+      ...(discount > 0 ? [["DISCOUNT", "", `-$${discount.toFixed(2)}`]] : []),
+      ["SHIPPING", "", shipping === 0 ? "FREE" : `$${shipping}`],
       ["TOTAL", "", `$${total.toFixed(2)}`],
     ];
 
-    // Combine all data
     const csvData = [headers, ...rows, ...summaryRows];
-
-    // Convert to CSV
     const csvContent = csvData.map((row) => row.join(",")).join("\n");
     const finalCsv = `${csvContent}\n\n"Order Date: ${new Date().toLocaleString()}"\n"Thank you for shopping with Cartify!"`;
 
-    // Create link
     const blob = new Blob([finalCsv], { type: "text/csv;charset=utf-8;" });
     const link = document.createElement("a");
     const url = URL.createObjectURL(blob);
@@ -234,13 +222,10 @@ const Cart = () => {
     setToast("Bill downloaded successfully!");
   };
 
-  // check for the user authentication
   if (!isLoggedin) {
     return (
       <div className="min-h-screen bg-gray-50 dark:bg-gray-950 transition-colors duration-300">
-        {/* navbar component in cart page */}
         <Navbar />
-
         <div className="max-w-7xl mx-auto px-4 py-20 text-center">
           <ShoppingBag
             size={64}
@@ -277,7 +262,6 @@ const Cart = () => {
     );
   }
 
-  // checking cart length
   if (cartItems.length === 0) {
     return (
       <div className="min-h-screen bg-gray-50 dark:bg-gray-950 transition-colors duration-300">
@@ -330,7 +314,6 @@ const Cart = () => {
                 <div className="col-span-2 text-center">Total</div>
               </div>
 
-              {/* displaying cart items */}
               {cartItems.map((item) => {
                 const product = getProduct(item.productId);
                 return (
@@ -439,18 +422,19 @@ const Cart = () => {
               </div>
 
               {appliedDiscount ? (
-                <div className="bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 rounded-lg p-3 mb-3">
+                <div className="bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 rounded-lg p-3">
                   <div className="flex justify-between items-center">
                     <div>
                       <span className="text-green-700 dark:text-green-400 font-semibold">
                         {appliedDiscount.code}
                       </span>
                       <p className="text-xs text-green-600 dark:text-green-500 mt-1">
-                        {appliedDiscount.description}
+                        {appliedDiscount.percent}% off - $
+                        {appliedDiscount.discountAmount?.toFixed(2)} saved
                       </p>
                     </div>
                     <button
-                      onClick={removeDiscount}
+                      onClick={handleRemoveDiscount}
                       className="text-gray-500 hover:text-red-500 transition"
                     >
                       <X size={18} />
@@ -463,39 +447,40 @@ const Cart = () => {
                     <input
                       type="text"
                       value={discountCode}
-                      onChange={handleDiscountChange}
+                      onChange={(e) =>
+                        setDiscountCode(e.target.value.toUpperCase())
+                      }
                       placeholder="Enter coupon code"
                       className="flex-1 border dark:border-gray-700 dark:bg-gray-800 dark:text-white p-2 rounded-lg outline-none focus:ring-2 focus:ring-amber-500 transition"
                     />
                     <button
-                      onClick={applyDiscount}
-                      className="bg-amber-500 hover:bg-amber-600 text-white px-5 py-2 rounded-lg font-medium transition"
+                      onClick={handleApplyDiscount}
+                      disabled={discountLoading}
+                      className="bg-amber-500 hover:bg-amber-600 text-white px-5 py-2 rounded-lg font-medium transition disabled:opacity-50"
                     >
-                      Apply
+                      {discountLoading ? "Applying..." : "Apply"}
                     </button>
                   </div>
                   {discountError && (
                     <p className="text-red-500 text-sm mt-2">{discountError}</p>
                   )}
 
-                  {/* available discounts */}
                   <div className="mt-4 pt-3 border-t border-gray-200 dark:border-gray-800">
                     <p className="text-xs text-gray-500 dark:text-gray-400 mb-2">
                       Available offers:
                     </p>
                     <div className="flex flex-wrap gap-2">
-                      {savedDiscounts.map((disc) => (
-                        <button
-                          key={disc.code}
-                          onClick={() => {
-                            setDiscountCode(disc.code);
-                            applyDiscount();
-                          }}
-                          className="text-xs bg-gray-100 dark:bg-gray-800 hover:bg-amber-100 dark:hover:bg-amber-900/30 text-gray-600 dark:text-gray-400 px-2 py-1 rounded transition"
-                        >
-                          {disc.code}
-                        </button>
-                      ))}
+                      {["SAVE10", "SAVE20", "WELCOME15", "FREESHIP"].map(
+                        (code) => (
+                          <button
+                            key={code}
+                            onClick={() => handleDiscountButtonClick(code)}
+                            className="text-xs bg-gray-100 dark:bg-gray-800 hover:bg-amber-100 dark:hover:bg-amber-900/30 text-gray-600 dark:text-gray-400 px-2 py-1 rounded transition"
+                          >
+                            {code}
+                          </button>
+                        ),
+                      )}
                     </div>
                   </div>
                 </>
@@ -524,7 +509,6 @@ const Cart = () => {
               </button>
             </div>
 
-            {/* order summary */}
             <div className="bg-white dark:bg-gray-900 rounded-lg shadow-md p-6 transition-colors duration-300 mt-5">
               <h2 className="text-lg font-semibold text-gray-800 dark:text-white mb-4">
                 Order Summary
@@ -535,19 +519,15 @@ const Cart = () => {
                   <span>Subtotal</span>
                   <span>${subtotal.toFixed(2)}</span>
                 </div>
-
                 {discount > 0 && (
                   <div className="flex justify-between text-green-600 dark:text-green-400">
-                    <span>Discount ({discountPercent}% off)</span>
+                    <span>Discount ({appliedDiscount?.percent}% off)</span>
                     <span>-${discount.toFixed(2)}</span>
                   </div>
                 )}
-
                 <div className="flex justify-between text-gray-600 dark:text-gray-400">
                   <span>Shipping</span>
-                  <span>
-                    {shipping === 0 ? "Free" : `$${shipping.toFixed(2)}`}
-                  </span>
+                  <span>{shipping === 0 ? "Free" : `$${shipping}`}</span>
                 </div>
               </div>
 
@@ -560,16 +540,10 @@ const Cart = () => {
                 </span>
               </div>
 
-              {appliedDiscount?.code === "SAVE20" && subtotal < 100 && (
-                <p className="text-xs text-red-500 mt-2">
-                  Add ${(100 - subtotal).toFixed(2)} more to qualify for SAVE20
-                  discount
-                </p>
-              )}
-
-              {subtotal > 50 && !appliedDiscount?.isFreeShipping && (
+              {subtotal > 50 && !appliedDiscount && (
                 <p className="text-xs text-green-600 dark:text-green-400 mt-2 text-center">
-                  You've qualified for free shipping!
+                  ✨ Add items worth ${(50 - subtotal).toFixed(2)} more for free
+                  shipping!
                 </p>
               )}
 
