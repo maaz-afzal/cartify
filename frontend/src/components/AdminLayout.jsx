@@ -1,10 +1,18 @@
 import React, { useState } from "react";
 import { Link, Outlet, useNavigate } from "react-router-dom";
-import { LayoutDashboard, Package, Users, LogOut, Menu } from "lucide-react";
+import {
+  LayoutDashboard,
+  Package,
+  ShoppingCart,
+  Users,
+  LogOut,
+  Menu,
+} from "lucide-react";
 
 const menuItems = [
   { path: "/admin", icon: LayoutDashboard, label: "Dashboard" },
   { path: "/admin/products", icon: Package, label: "Products" },
+  { path: "/admin/orders", icon: ShoppingCart, label: "Orders" }, // ✅ Added Orders
   { path: "/admin/users", icon: Users, label: "Users" },
 ];
 
@@ -29,7 +37,9 @@ const AdminLayout = () => {
         {/* admin panel header */}
         <div className="flex items-center justify-between p-4 border-b border-gray-200 dark:border-gray-800 h-16">
           {isSidebarOpen && (
-            <h1 className="text-xl font-bold text-amber-600">Admin Panel</h1>
+            <h1 className="text-xl font-bold bg-linear-to-r from-amber-700 to-amber-500 bg-clip-text text-transparent">
+              Cartify Admin
+            </h1>
           )}
           <button
             onClick={() => setSidebarOpen(!isSidebarOpen)}

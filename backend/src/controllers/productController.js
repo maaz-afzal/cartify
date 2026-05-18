@@ -5,7 +5,6 @@ const getProducts = async (req, res) => {
     const { page = 1, limit = 10, search, category, brand } = req.query;
     const skip = (parseInt(page) - 1) * parseInt(limit);
 
-    // Filter Object
     let query = {};
 
     if (category && category !== "All") {

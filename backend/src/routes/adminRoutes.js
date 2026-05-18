@@ -9,19 +9,19 @@ const {
   deleteProduct,
   getUsers,
 } = require("../controllers/adminController");
+const { getAllOrders, updateOrderStatus } = require("../controllers/orderController");
 
 const router = express.Router();
 
-// Dashboard Stats
 router.get("/stats", authMiddleware, adminMiddleware, getStats);
-
-// Products Routes
 router.get("/products", authMiddleware, adminMiddleware, getProducts);
 router.post("/products", authMiddleware, adminMiddleware, addProduct);
 router.put("/products/:id", authMiddleware, adminMiddleware, updateProduct);
 router.delete("/products/:id", authMiddleware, adminMiddleware, deleteProduct);
 
-// Users Routes
 router.get("/users", authMiddleware, adminMiddleware, getUsers);
+
+router.get("/orders", authMiddleware, adminMiddleware, getAllOrders);
+router.put("/orders/:id/status", authMiddleware, adminMiddleware, updateOrderStatus,);
 
 module.exports = router;

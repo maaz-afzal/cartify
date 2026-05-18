@@ -4,18 +4,26 @@ const Order = require("../models/Order");
 
 exports.getStats = async (req, res) => {
   try {
-    const totalProducts = await Product.countDocuments();
-    const totalUsers = await User.countDocuments();
-    const totalOrders = await Order.countDocuments();
+    const productCount = await Product.countDocuments();
+    const userCount = await User.countDocuments();
+    const orderCount = await Order.countDocuments();
+
+    const allOrders = await Order.find();
+
+    let revenue = 0;
+    for (const order of allOrders) {
+      revenue += order.totalPrice;
+    }
 
     res.json({
-      totalProducts,
-      totalUsers,
-      totalOrders,
+      totalProducts: productCount,
+      totalUsers: userCount,
+      totalOrders: orderCount,
+      totalRevenue: revenue,
     });
   } catch (error) {
-    console.error("Stats Error:", error);
-    res.status(500).json({ message: "Server error while fetching stats" });
+    console.error(error);
+    res.status(500).json({ message: "Server error" });
   }
 };
 
@@ -45,7 +53,7 @@ exports.addProduct = async (req, res) => {
       tags,
     } = req.body;
 
-    const product = new Product({
+    const newProduct = new Product({
       name,
       price: Number(price),
       category,
@@ -59,8 +67,8 @@ exports.addProduct = async (req, res) => {
       tags: tags || ["product"],
     });
 
-    await product.save();
-    res.status(201).json(product);
+    await newProduct.save();
+    res.status(201).json(newProduct);
   } catch (error) {
     console.error("Add Product Error:", error);
     res.status(500).json({ message: error.message });
@@ -69,16 +77,17 @@ exports.addProduct = async (req, res) => {
 
 exports.updateProduct = async (req, res) => {
   try {
-    const product = await Product.findByIdAndUpdate(req.params.id, req.body, {
-      new: true,
-      runValidators: true,
-    });
+    const updatedProduct = await Product.findByIdAndUpdate(
+      req.params.id,
+      req.body,
+      { new: true, runValidators: true },
+    );
 
-    if (!product) {
+    if (!updatedProduct) {
       return res.status(404).json({ message: "Product not found" });
     }
 
-    res.json(product);
+    res.json(updatedProduct);
   } catch (error) {
     console.error("Update Product Error:", error);
     res.status(500).json({ message: "Server error while updating product" });
@@ -87,9 +96,9 @@ exports.updateProduct = async (req, res) => {
 
 exports.deleteProduct = async (req, res) => {
   try {
-    const product = await Product.findByIdAndDelete(req.params.id);
+    const deletedProduct = await Product.findByIdAndDelete(req.params.id);
 
-    if (!product) {
+    if (!deletedProduct) {
       return res.status(404).json({ message: "Product not found" });
     }
 

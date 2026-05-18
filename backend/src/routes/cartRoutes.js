@@ -4,8 +4,8 @@ const router = express.Router();
 
 router.get("/", getCart);
 router.post("/", addToCart);
+router.delete("/clear", clearCart);
 router.delete("/:productId", removeFromCart);
 router.put("/:productId", updateCart);
-router.delete("/clear", clearCart);
 
 module.exports = router;

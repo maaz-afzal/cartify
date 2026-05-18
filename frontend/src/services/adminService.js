@@ -60,6 +60,28 @@ const getUsers = async () => {
   }
 };
 
+const getAllOrders = async () => {
+  try {
+    const res = await api.get("/api/admin/orders");
+    return res.data;
+  } catch (error) {
+    console.log(error);
+    throw error;
+  }
+};
+
+const updateOrderStatus = async (orderId, status) => {
+  try {
+    const res = await api.put(`/api/admin/orders/${orderId}/status`, {
+      status,
+    });
+    return res.data;
+  } catch (error) {
+    console.log(error);
+    throw error;
+  }
+};
+
 export default {
   getStats,
   getProducts,
@@ -67,4 +89,6 @@ export default {
   updateProduct,
   deleteProduct,
   getUsers,
+  getAllOrders,
+  updateOrderStatus,
 };
