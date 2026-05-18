@@ -48,8 +48,21 @@ const CartProvider = ({ children }) => {
     }
   };
 
+  const clearCart = async () => {
+    try {
+      const res = await cartService.clearCart();
+      setCartItems([]);
+      return res;
+    } catch (err) {
+      console.error("Clear cart failed:", err);
+      throw err;
+    }
+  };
+
   return (
-    <CartContext.Provider value={{ cartItems, getCart, addToCart, updateCart, removeFromCart }}>
+    <CartContext.Provider
+      value={{ cartItems, getCart, addToCart, updateCart, removeFromCart, clearCart }}
+    >
       {children}
     </CartContext.Provider>
   );

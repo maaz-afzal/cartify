@@ -1,12 +1,12 @@
-import React, { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import React, { useEffect } from "react";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import { CheckCircle, ShoppingBag } from "lucide-react";
 import confetti from "canvas-confetti";
 
 const OrderSuccess = () => {
   const navigate = useNavigate();
-
-  const [orderId] = useState(() => `#CART${Math.floor(Math.random() * 100000)}`);
+  const [searchParams] = useSearchParams();
+  const orderId = searchParams.get("id");
 
   useEffect(() => {
     confetti({
@@ -27,15 +27,21 @@ const OrderSuccess = () => {
           </div>
         </div>
 
-        <h1 className="text-2xl font-bold text-gray-800 dark:text-white mb-2">Order Confirmed! 🎉</h1>
+        <h1 className="text-2xl font-bold text-gray-800 dark:text-white mb-2">
+          Order Confirmed! 🎉
+        </h1>
 
         <p className="text-gray-500 dark:text-gray-400 mb-6">
-          Thank you for shopping with Cartify! We've received your order and will process it soon.
+          Thank you for shopping with Cartify! We've received your order and
+          will process it soon.
         </p>
 
         <div className="bg-gray-100 dark:bg-gray-800 rounded-lg p-4 mb-6">
           <p className="text-sm text-gray-600 dark:text-gray-400">
-            Order ID: <span className="font-mono font-semibold">{orderId}</span>
+            Order ID:{" "}
+            <span className="font-mono font-semibold">
+              {orderId || "#CART" + Math.floor(Math.random() * 100000)}
+            </span>
           </p>
           <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">
             A confirmation email has been sent to your registered email address.

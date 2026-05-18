@@ -8,13 +8,10 @@ exports.getStats = async (req, res) => {
     const totalUsers = await User.countDocuments();
     const totalOrders = await Order.countDocuments();
 
-    const totalRevenue = 0;
-
     res.json({
       totalProducts,
       totalUsers,
       totalOrders,
-      totalRevenue,
     });
   } catch (error) {
     console.error("Stats Error:", error);
