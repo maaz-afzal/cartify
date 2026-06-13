@@ -361,8 +361,7 @@ All protected routes require a `Bearer` token in the `Authorization` header.
 
 ## Author
 
-**Maaz** — MERN Stack Developer  
-University of Engineering and Technology, Jalozai
+**Maaz** — MERN Stack Developer
 
 - GitHub: [@maaz-afzal](https://github.com/maaz-afzal)
 
