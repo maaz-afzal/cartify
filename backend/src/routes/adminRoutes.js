@@ -9,7 +9,7 @@ const {
   deleteProduct,
   getUsers,
 } = require("../controllers/adminController");
-const { getAllOrders, updateOrderStatus } = require("../controllers/orderController");
+const { getAllOrders, updateOrderStatus } = require("../controllers/OrderController");
 
 const router = express.Router();
 
