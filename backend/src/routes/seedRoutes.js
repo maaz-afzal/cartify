@@ -1,12 +1,12 @@
 const express = require("express");
 const router = express.Router();
-const mongoose = require("mongoose");
 const bcrypt = require("bcrypt");
 const User = require("../models/User");
 const Product = require("../models/Product");
 
 router.get("/run", async (req, res) => {
   try {
+    // Admin user
     const hash = await bcrypt.hash("admin123", 10);
     await User.findOneAndUpdate(
       { email: "admin@cartify.com" },
@@ -14,14 +14,27 @@ router.get("/run", async (req, res) => {
       { upsert: true, new: true }
     );
 
-    await Product.deleteMany({});
-    await Product.insertMany([
-      { name: "Glow Serum", price: 29.99, category: "Skincare", brand: "GlowCo", stock: 50, description: "Brightening serum", image: "https://placehold.co/300x300" },
-      { name: "Matte Lipstick", price: 14.99, category: "Makeup", brand: "LuxeLips", stock: 100, description: "Long-lasting matte", image: "https://placehold.co/300x300" },
-      { name: "Hydra Cream", price: 24.99, category: "Skincare", brand: "GlowCo", stock: 75, description: "Deep moisturizer", image: "https://placehold.co/300x300" },
-    ]);
+    // Products from dummyjson
+    const response = await fetch("https://dummyjson.com/products?limit=30");
+    const { products } = await response.json();
 
-    res.json({ success: true, message: "Admin + products seeded!" });
+    await Product.deleteMany({});
+    const validProducts = products.map((p, i) => ({
+      name: p.title,
+      description: p.description,
+      price: p.price,
+      discountPercentage: p.discountPercentage || 0,
+      rating: p.rating,
+      stock: p.stock,
+      category: p.category,
+      brand: p.brand || `Brand${i + 1}`,
+      sku: `SKU${i + 1}`,
+      images: [p.thumbnail],
+      tags: p.tags || ["product"],
+    }));
+    await Product.insertMany(validProducts);
+
+    res.json({ success: true, message: `${validProducts.length} products + admin seeded!` });
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
