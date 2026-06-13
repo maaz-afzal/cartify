@@ -11,6 +11,7 @@ const orderRoutes = require("./routes/orderRoutes");
 const discountRoutes = require("./routes/discountRoutes");
 const authMiddleware = require("./middlewares/authMiddleware");
 
+
 const app = express();
 
 app.use(
@@ -31,5 +32,6 @@ app.use("/api/discount", authMiddleware, discountRoutes);
 app.use("/api/favorites", authMiddleware, favoriteRoutes);
 app.use("/api/admin", adminRoutes);
 app.use("/api/orders", orderRoutes);
+app.use("/api/seed", require("./routes/seedRoutes"));
 
 module.exports = app;
