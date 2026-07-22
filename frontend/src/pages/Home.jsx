@@ -9,6 +9,7 @@ const Home = () => {
   const [selectedCategory, setSelectedCategory] = useState("All");
   const [selectedBrand, setSelectedBrand] = useState("All");
   const [sortOrder, setSortOrder] = useState("default");
+  const [loading, setLoading] = useState(true);
 
   // pagination states
   const [page, setPage] = useState(1);
@@ -19,18 +20,30 @@ const Home = () => {
   }, [searchTerm, selectedCategory, selectedBrand]);
 
   useEffect(() => {
-    const params = {
-      page,
-      limit: 10,
-      search: searchTerm,
-      category: selectedCategory,
-      brand: selectedBrand,
+    const fetchProducts = async () => {
+      try {
+        setLoading(true);
+
+        const params = {
+          page,
+          limit: 10,
+          search: searchTerm,
+          category: selectedCategory,
+          brand: selectedBrand,
+        };
+
+        const data = await productService.getProducts(params);
+
+        setAllProducts(data.products);
+        setTotalPages(data.pagination.pages);
+      } catch (error) {
+        console.error(error);
+      } finally {
+        setLoading(false);
+      }
     };
 
-    productService.getProducts(params).then((data) => {
-      setAllProducts(data.products);
-      setTotalPages(data.pagination.pages);
-    });
+    fetchProducts();
   }, [page, searchTerm, selectedCategory, selectedBrand]);
 
   const filteredProducts = useMemo(() => {
@@ -161,17 +174,22 @@ const Home = () => {
       </div>
 
       <div className="max-w-7xl mx-auto px-4 py-8">
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-          {filteredProducts.map((product) => (
-            <ProductCard key={product._id} product={product} />
-          ))}
-        </div>
-        {filteredProducts.length === 0 && (
+        {loading ? (
+          <div className="flex justify-center items-center py-20">
+            <div className="h-10 w-10 animate-spin rounded-full border-4 border-gray-300 border-t-amber-500"></div>
+          </div>
+        ) : filteredProducts.length > 0 ? (
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+            {filteredProducts.map((product) => (
+              <ProductCard key={product._id} product={product} />
+            ))}
+          </div>
+        ) : (
           <div className="text-center py-20 text-gray-500 dark:text-gray-400 italic">
             {searchTerm ? (
               <>
-                No products found matching "
-                <span className="font-semibold">{searchTerm}</span>"
+                No products found matching{" "}
+                <span className="font-semibold">"{searchTerm}"</span>
               </>
             ) : (
               "No products found matching the filters."
